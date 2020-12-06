@@ -14,6 +14,8 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
     public float cohWeight;
     public float alignWeight;
     public float avoidWeight;
+
+    public float deltaTime;
     // ------------------------------
 
     public Material material;
@@ -37,6 +39,7 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
         public Vector3 alignVector;
         public Vector3 avoidVector;
         // ------------------------------
+
         public static int Size() {
             return
                 sizeof(float) * 4 * 4 +
@@ -95,6 +98,7 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
 
         meshPropertiesBuffer = new ComputeBuffer(population, MeshProperties.Size());
         meshPropertiesBuffer.SetData(properties);
+
         compute.SetBuffer(kernel, "_Properties", meshPropertiesBuffer);
         material.SetBuffer("_Properties", meshPropertiesBuffer);
     }
@@ -148,10 +152,23 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
     private void Update() {
         int kernel = compute.FindKernel("CSMain");
 
+        // ------------------------------
+        compute.SetFloat("_distanceFromPusher", distanceFromPusher);
+        compute.SetFloat("_awaySpeed", awaySpeed);
+        compute.SetFloat("_radius", radius);
+
+        compute.SetFloat("_cohWeight", cohWeight);
+        compute.SetFloat("_alignWeight", alignWeight);
+        compute.SetFloat("_avoidWeight", avoidWeight);
+
+        compute.SetFloat("_deltaTime", deltaTime);
+        compute.SetInt("_population", population);
+        // ------------------------------
+
         compute.SetVector("_PusherPosition", pusher.position);
         // We used to just be able to use `population` here, but it looks like a Unity update imposed a thread limit (65535) on my device.
         // This is probably for the best, but we have to do some more calculation.  Divide population by numthreads.x in the compute shader.
-        compute.Dispatch(kernel, Mathf.CeilToInt(population / 64f), 1, 1);
+        compute.Dispatch(kernel, Mathf.CeilToInt(population / 64f), 1, 1); // CeilToInt : 올림
         Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer);
     }
 

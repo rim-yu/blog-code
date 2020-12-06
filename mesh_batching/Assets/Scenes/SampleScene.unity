@@ -355,14 +355,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7c25e43eccad8f4ba08678d4226d3c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  population: 100
-  range: 10
+  population: 10000
+  range: 1
   distanceFromPusher: 1
-  awaySpeed: 1
+  awaySpeed: 0.01
   radius: 1
   cohWeight: 1
   alignWeight: 0
   avoidWeight: 1
+  deltaTime: 20
   material: {fileID: 2100000, guid: 73db65a1ca221d743a283d61debf851c, type: 2}
   compute: {fileID: 7200000, guid: c805f08c2dbc29d4e9ce1c601a11ce73, type: 3}
   pusher: {fileID: 2001345050}

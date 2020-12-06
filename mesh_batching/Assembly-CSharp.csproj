@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Assets\DrawMeshInstancedDemo.cs" />
     <Compile Include="Assets\DrawMeshInstancedIndirectDemo.cs" />
+    <None Include="Assets\mj.compute" />
     <None Include="Assets\Movement.compute" />
     <None Include="Assets\InstancedColor.shader" />
     <None Include="Assets\InstancedIndirectColor.shader" />
