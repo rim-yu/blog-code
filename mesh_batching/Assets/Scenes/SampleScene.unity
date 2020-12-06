@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641252, b: 0.5748167, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -321,7 +321,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1637639710}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d023976450fc88d45955b6ffb05cd9fc, type: 3}
   m_Name: 
@@ -350,13 +350,19 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1637639710}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7c25e43eccad8f4ba08678d4226d3c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  population: 100000
+  population: 100
   range: 10
+  distanceFromPusher: 1
+  awaySpeed: 1
+  radius: 1
+  cohWeight: 1
+  alignWeight: 0
+  avoidWeight: 1
   material: {fileID: 2100000, guid: 73db65a1ca221d743a283d61debf851c, type: 2}
   compute: {fileID: 7200000, guid: c805f08c2dbc29d4e9ce1c601a11ce73, type: 3}
   pusher: {fileID: 2001345050}

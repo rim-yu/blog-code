@@ -1,46 +1,170 @@
 ﻿#pragma kernel CSMain
 
-struct MeshProperties {
+struct MeshProperties { 
     float4x4 mat;
     float4 color;
+
+	// ------------------------------
+	float3 cohVector;
+	float3 alignVector;
+	float3 avoidVector;
+	// ------------------------------
 };
 
-RWStructuredBuffer<MeshProperties> _Properties;
-float3 _PusherPosition;
+RWStructuredBuffer<MeshProperties> _Properties; 
+float3 _PusherPosition; 
 
 // We used to just be able to use (1, 1, 1) threads for whatever population (not sure the old limit), but a Unity update
 // imposed a thread limit of 65535.  Now, to render populations above that, we need to be more granular with our threads.
 [numthreads(64,1,1)]
-void CSMain (uint3 id : SV_DispatchThreadID) {
-    float4x4 mat = _Properties[id.x].mat;
-    // In a transform matrix, the position (translation) vector is the last column.
-    float3 position = float3(mat[0][3], mat[1][3], mat[2][3]);
 
-    float dist = distance(position, _PusherPosition);
-    // Scale and reverse distance so that we get a value which fades as it gets further away.
-    // Max distance is 5.0.
-    dist = 5.0 - clamp(0.0, 5.0, dist);
+void CSMain (uint3 id : SV_DispatchThreadID) { 
+	// original code : 
+    float4x4 mat = _Properties[id.x].mat; 
+    float3 position = float3(mat[0][3], mat[1][3], mat[2][3]); 
 
-    // Get the vector from the pusher to the position, and scale it.
-    float3 push = normalize(position - _PusherPosition) * dist;
-    // Create a new translation matrix which represents a move in a direction.
-    float4x4 translation = float4x4(
-        1, 0, 0, push.x,
-        0, 1, 0, push.y,
-        0, 0, 1, push.z,
-        0, 0, 0, 1
-    );
+	// ------------------------------
+	float3 cohVector = getCohVector(id.x, _Properties[id.x], _radius, _population); 
+	float3 alignVector = getAlignVector(id.x, _Properties[id.x], _radius, _population);
+	float3 avoidVector = getAvoidVector(id.x, _Properties[id.x], _radius, _population);
 
-    // Apply translation to existing matrix, which will be read in the shader.
-    _Properties[id.x].mat = mul(translation, mat);
+	float3 moveVector = _cohWeight * cohVector + _alignWeight * alignVector + _avoidWeight * avoidVector;
+	float3 nextPosition = moveVector * _deltaTime; // ?
+	
+	// 질문 : (1) 첫 번째 넘어가는 새로운 위치
+	_Properties[id.x].mat[0][3] = nextPosition.x;
+	_Properties[id.x].mat[1][3] = nextPosition.y;
+	_Properties[id.x].mat[2][3] = nextPosition.z;
 
-    /* Just for demo gif.  Not actually very useful -- need to inverse rotation first.
-    float4x4 rotation = float4x4(
-        .999, -.01, 0, 0.1,
-        .01, .999, 0, 0.1,
-        0, 0, 1, 0.1,
-        0, 0, 0, 1
-    );
-    _Properties[id.x].mat = mul(_Properties[id.x].mat, rotation);
-    */
+	// 질문 : dist 랑 _distanceFromPusher 랑 뭐가 다른가.
+	// original code : 
+	float dist = distance(position, _pusherPosition); 
+	// Scale and reverse distance so that we get a value which fades as it gets further away.
+	// Max distance is 5.0.
+	// dist = 5.0 - clamp(0.0, 5.0, dist);
+
+	float _distanceFromPusher;
+
+	float3 awayVector;
+	float3 awayDir;
+	float _awaySpeed = 1.0f;
+
+	if (dist < _distanceFromPusher) 
+	{
+		awayDir = normalize(position - _PusherPosition); 
+		awayVector = awayDir * _awaySpeed;
+	}
+	else
+	{
+		awayVector = float3(0, 0, 0);
+	}
+
+	float3 moveVector = _cohWeight * cohVector + _alignWeight * alignVector + _avoidWeight * avoidVector + _awayWeight * awayVector;
+	float3 nextPosition = moveVector * _deltaTime;
+
+	// (2) 두 번째 넘어가는 새로운 위치 로 이해하면 되는 것인지 
+	_Properties[id.x].mat[0][3] = nextPosition.x;
+	_Properties[id.x].mat[1][3] = nextPosition.y;
+	_Properties[id.x].mat[2][3] = nextPosition.z; 
+	// ------------------------------
+}
+
+// myIndex에 해당하는 agent의 position을 구해준다. 
+float3 getAgentPosition(int myIndex)  
+{
+	float4x4 mat = _Properties[myIndex].mat;
+	float3 myPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
+	return myPosition;
+}
+
+// 'Cohesion' function of the 'Crowd Member' class 
+// main () 에서 id.x 로 각 index 를 가져오므로, 각 index 에 대한 cohVector 구하는 것으로 이해. 
+float3 getCohVector(int myIndex, _Properties, float _radius, int _population) 
+{ 
+	float4x4 mat = _Properties[myIndex].mat; 
+	float3 myPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
+
+	float neighborCount = 0;
+
+	float3 cohVector = float3(0, 0, 0);
+	float3 prevcohVector = _Properties[myIndex].cohVector; // ?
+
+	for (int index = 0; index < population; index++)
+	{
+		float3 otherAgentPosition = getAgentPosition(index);
+		if (distance(myPosition, otherAgentPosition) < _radius)
+		{
+			cohVector += otherAgentPosition;
+			neighborCount += 1;
+		}
+	}
+	if (neighborCount == 0)
+	{
+		return float3(0, 0, 0);
+	}
+
+	cohVector /= neighborCount;  
+	cohVector -= myPosition; . 
+	cohVector = smoothstep(cohVector, 0, _maxCohVector) // ? 
+ 
+	return cohVector;
+}
+	
+// 'Alignment' function of the 'Crowd Member' class
+//float3 getAlignVector(int myIndex, _Properties, float _radius, int _population)
+//{
+//	float4x4 mat = _Properties[myIndex].mat;
+//	float3 myPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
+//
+//	float3 alignVector = float3(0, 0, 0);
+//	float neighborCount = 0;
+//
+//	for (int index = 0; index < population - 1; index++)
+//	{
+//		float3 otherAgentPosition = getNeighborPosition(index);
+//
+//		if (distance(myPosition, neighborPosition) < _radius) 
+//		{
+//			// alignVector += "thisPosition 의 forward 방향 벡터"   
+//			neighborCount += 1
+//		}
+//	}
+//
+//	if (neighborCount == 0)
+//	{
+//		// return "position thisPosition의 foward 방향 벡터";
+//	}
+//
+//	alignVector /= neighborCount;
+//
+//	return alignVector;
+//}
+
+// 'Avoidance' function of the 'Crowd Member' class
+float3 getAvoidVector(int myIndex, _Properties, float _radius, int _population)
+{
+	float4x4 mat = _Properties[myIndex].mat;
+	float3 myPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
+
+	float3 avoidVector = float3(0, 0, 0);
+	float avoidanceRadius = 0; // 전제 : avoidanceRadius < _radius, _radius 처럼 넘어오는 값으로 하나.  
+	int nAvoid = 0;
+
+	for (int index = 0; index < population; index++)
+	{
+		float3 otherAgentPosition = getNeighborPosition(index);
+
+		if (distance(myPosition, otherAgentPosition) < avoidacneRadius)
+		{
+			avoidVector += myPosition - otherAgentPosition;
+			nAvoid += 1;
+		}
+	}
+
+	if (nAvoid > 0)
+	{
+		avoidVector /= nAvoid;
+	}
+
+	return avoidVector;
 }

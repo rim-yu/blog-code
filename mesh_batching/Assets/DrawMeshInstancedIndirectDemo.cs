@@ -1,10 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using UnityEngine; 
 
-public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
-    public int population;
+public class DrawMeshInstancedIndirectDemo : MonoBehaviour { 
+    public int population; 
     public float range;
+
+    // ------------------------------
+    public float distanceFromPusher;
+    public float awaySpeed;
+    public float radius;
+    
+    public float cohWeight;
+    public float alignWeight;
+    public float avoidWeight;
+    // ------------------------------
 
     public Material material;
     public ComputeShader compute;
@@ -13,33 +23,43 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
     private ComputeBuffer meshPropertiesBuffer;
     private ComputeBuffer argsBuffer;
 
-    private Mesh mesh;
+    private Mesh mesh; 
     private Bounds bounds;
 
     // Mesh Properties struct to be read from the GPU.
     // Size() is a convenience funciton which returns the stride of the struct.
-    private struct MeshProperties {
+    private struct MeshProperties { 
         public Matrix4x4 mat;
         public Vector4 color;
 
+        // ------------------------------
+        public Vector3 cohVector;
+        public Vector3 alignVector;
+        public Vector3 avoidVector;
+        // ------------------------------
         public static int Size() {
             return
-                sizeof(float) * 4 * 4 + // matrix;
-                sizeof(float) * 4;      // color;
+                sizeof(float) * 4 * 4 +
+                sizeof(float) * 4 +
+            // ------------------------------
+                sizeof(float) * 3 +
+                sizeof(float) * 3 +
+                sizeof(float) * 3;
+            // ------------------------------
         }
     }
 
-    private void Setup() {
-        Mesh mesh = CreateQuad();
+    private void Setup() { 
+        Mesh mesh = CreateQuad(); 
         this.mesh = mesh;
 
         // Boundary surrounding the meshes we will be drawing.  Used for occlusion.
         bounds = new Bounds(transform.position, Vector3.one * (range + 1));
 
-        InitializeBuffers();
+        InitializeBuffers(); 
     }
 
-    private void InitializeBuffers() {
+    private void InitializeBuffers() { 
         int kernel = compute.FindKernel("CSMain");
 
         // Argument buffer used by DrawMeshInstancedIndirect.
@@ -54,8 +74,8 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
         argsBuffer.SetData(args);
 
         // Initialize buffer with the given population.
-        MeshProperties[] properties = new MeshProperties[population];
-        for (int i = 0; i < population; i++) {
+        MeshProperties[] properties = new MeshProperties[population]; 
+        for (int i = 0; i < population; i++) { 
             MeshProperties props = new MeshProperties();
             Vector3 position = new Vector3(Random.Range(-range, range), Random.Range(-range, range), Random.Range(-range, range));
             Quaternion rotation = Quaternion.Euler(Random.Range(-180, 180), Random.Range(-180, 180), Random.Range(-180, 180));
@@ -63,6 +83,12 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
 
             props.mat = Matrix4x4.TRS(position, rotation, scale);
             props.color = Color.Lerp(Color.red, Color.blue, Random.value);
+
+            // ------------------------------
+            props.cohVector = new Vector3(0, 0, 0);
+            props.alignVector = new Vector3(0, 0, 0);
+            props.avoidVector = new Vector3(0, 0, 0);
+            // ------------------------------
 
             properties[i] = props;
         }
@@ -73,7 +99,7 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
         material.SetBuffer("_Properties", meshPropertiesBuffer);
     }
 
-    private Mesh CreateQuad(float width = 1f, float height = 1f) {
+    private Mesh CreateQuad(float width = 1f, float height = 1f) { 
         // Create a quad mesh.
         var mesh = new Mesh();
 
