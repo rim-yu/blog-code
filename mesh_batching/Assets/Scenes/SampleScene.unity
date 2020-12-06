@@ -356,12 +356,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   population: 10000
-  range: 1
+  range: 10
   distanceFromPusher: 1
-  awaySpeed: 0.01
+  awaySpeed: 10
   radius: 1
   cohWeight: 1
-  alignWeight: 0
+  maxCohVector: {x: 1, y: 1, z: 1}
+  alignWeight: 1
   avoidWeight: 1
   deltaTime: 20
   material: {fileID: 2100000, guid: 73db65a1ca221d743a283d61debf851c, type: 2}

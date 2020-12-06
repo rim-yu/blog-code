@@ -10,12 +10,16 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
     public float distanceFromPusher;
     public float awaySpeed;
     public float radius;
-    
-    public float cohWeight;
-    public float alignWeight;
-    public float avoidWeight;
-
     public float deltaTime;
+    public float avoidanceRadius;
+
+    [Header("Cohesion")]
+    public float cohWeight;
+    public Vector3 maxCohVector;
+    [Header("Alignment")]
+    public float alignWeight;
+    [Header("Avoidance")]
+    public float avoidWeight;
     // ------------------------------
 
     public Material material;
@@ -163,6 +167,8 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
 
         compute.SetFloat("_deltaTime", deltaTime);
         compute.SetInt("_population", population);
+        compute.SetVector("_maxCohVector", maxCohVector);
+        compute.SetFloat("_avoidanceRadius", avoidanceRadius);
         // ------------------------------
 
         compute.SetVector("_PusherPosition", pusher.position);
