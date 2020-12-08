@@ -1,7 +1,27 @@
 Base path: 'C:/Program Files/Unity/Hub/Editor/2019.3.15f1/Editor/Data', plugins path 'C:/Program Files/Unity/Hub/Editor/2019.3.15f1/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
-Cmd: compileSnippet
-  api=4 type=0 insize=1602 outsize=2002 kw=UNITY_PASS_FORWARDBASE DIRECTIONAL SHADOWS_SCREEN LIGHTPROBE_SH _EMISSION pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_USE_DITHER_MASK_FOR_ALPHABLENDED_SHADOWS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING UNITY_ENABLE_DETAIL_NORMALMAP SHADER_API_DESKTOP UNITY_COLORSPACE_GAMMA UNITY_LIGHT_PROBE_PROXY_VOLUME UNITY_LIGHTMAP_FULL_HDR ok=1
+Cmd: compileComputeKernel
+  error: 2 plat 4 at Movement.compute(186): 'getCohVector': no matching 7 parameter function
+  error: 1 plat 4 at Movement.compute(186): 'getCohVector': implicit truncation of vector type
+  api=4 insize=8037 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 1 plat 4 at Movement.compute(172): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(173): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(174): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(175): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(176): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(177): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(178): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(179): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(180): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(181): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(182): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(183): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(184): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(192): 'getCohVector': implicit truncation of vector type
+  error: 1 plat 4 at Movement.compute(193): 'getAlignVector': implicit truncation of vector type
+  error: 1 plat 4 at Movement.compute(194): 'getAvoidVector': implicit truncation of vector type
+  api=4 insize=8606 outsize=4873 ok=1
 Unhandled exception: Protocol error - unexpected end of data (did the Editor crash?)
 
 Quitting shader compiler process

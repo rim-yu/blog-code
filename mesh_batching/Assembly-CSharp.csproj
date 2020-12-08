@@ -65,7 +65,14 @@
   <ItemGroup>
     <Compile Include="Assets\DrawMeshInstancedDemo.cs" />
     <Compile Include="Assets\DrawMeshInstancedIndirectDemo.cs" />
-    <None Include="Assets\mj.compute" />
+    <Compile Include="Assets\Scripts\CameraFollow.cs" />
+    <Compile Include="Assets\Scripts\Drive.cs" />
+    <Compile Include="Assets\Scripts\MoveDown.cs" />
+    <Compile Include="Assets\Scripts\MoveForward.cs" />
+    <Compile Include="Assets\Scripts\MoveToDestination.cs" />
+    <Compile Include="Assets\Scripts\MoveUp.cs" />
+    <Compile Include="Assets\Scripts\TurnLeft.cs" />
+    <Compile Include="Assets\Scripts\TurnRight.cs" />
     <None Include="Assets\Movement.compute" />
     <None Include="Assets\InstancedColor.shader" />
     <None Include="Assets\InstancedIndirectColor.shader" />

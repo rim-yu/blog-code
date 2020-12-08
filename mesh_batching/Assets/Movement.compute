@@ -5,28 +5,37 @@ struct MeshProperties {
     float4 color;
 
 	// ------------------------------
-	float3 cohVector;
-	float3 alignVector;
-	float3 avoidVector;
+	//float3 cohVector;
+	//float3 alignVector;
+	//float3 avoidVector;
+
+	//float3 position; // position is float3(mat[0][3], mat[1][3], mat[2][3])
+	//float3 velocity; 
+	// current velocity * _deltaTime = next velocitiy 
+	// next velocity -> next position
 	// ------------------------------
 };
 
 RWStructuredBuffer<MeshProperties> _Properties; 
 float3 _PusherPosition; 
 
+// ****
+RWStructuredBuffer<float> _debugBufferFloat; // array
+// RWStructuredBuffer<int> _debugBufferInt;
+// ****
 // ------------------------------
+// **** 아래 순서 중요
 float _distanceFromPusher;
-float _awaySpeed;
-float _radius;
-
-float _cohWeight;
-float _alignWeight;
-float _avoidWeight;
+float _neighborRadius;
 
 float _deltaTime;
 int _population;
-float3 _maxCohVector;
-float _avoidanceRadius; // avoidanceRadius < _radius 
+float _avoidanceRadius; // avoidanceRadius < _neigborRadius
+
+float _cohSpeed;
+float _alignSpeed;
+float _avoidSpeed;
+float _awaySpeed;
 // ------------------------------
 
 // ------------------------------
@@ -39,23 +48,19 @@ float3 getAgentPosition(int myIndex, RWStructuredBuffer<MeshProperties> _Propert
 }
 
 // 'Cohesion' function of the 'Crowd Member' class 
-// main () 에서 id.x 로 각 index 를 가져오므로, 각 index 에 대한 cohVector 구하는 것으로 이해. 
-float3 getCohVector(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _radius, int _population, float3 _maxCohVector)
+float3 getCohVector(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _neigborRadius, int _population, float _deltaTime)
 {
 	float4x4 mat = _Properties[myIndex].mat;
 	float3 myPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
-
 	float neighborCount = 0;
-
-	float3 cohVector = float3(0, 0, 0);
-	float3 prevcohVector = _Properties[myIndex].cohVector;
-
+	float3 sumOfCohVectors = float3(0, 0, 0); // sum of cohesion vectors
+	
 	for (int index = 0; index < _population; index++)
 	{
 		float3 otherAgentPosition = getAgentPosition(index, _Properties);
-		if (distance(myPosition, otherAgentPosition) < _radius)
+		if (distance(myPosition, otherAgentPosition) < _neigborRadius)
 		{
-			cohVector += otherAgentPosition;
+			sumOfCohVectors += otherAgentPosition;
 			neighborCount += 1;
 		}
 	}
@@ -64,89 +69,92 @@ float3 getCohVector(int myIndex, RWStructuredBuffer<MeshProperties> _Properties,
 		return float3(0, 0, 0);
 	}
 
-	cohVector /= neighborCount;
-	cohVector -= myPosition;
-	cohVector = smoothstep(cohVector, 0, _maxCohVector);
-
-	return cohVector;
+	float3 cohCenter = sumOfCohVectors / neighborCount;
+	float3 cohTargetVector = cohCenter - myPosition; // cohesion target vector 방향으로 가는 것임. 
+	
+	return cohTargetVector;
 }
 
 // 'Alignment' function of the 'Crowd Member' class
-float3 getAlignVector(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _radius, int _population)
+float3 getAlignVector(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _neigborRadius, int _population, float _deltaTime)
 {
 	float4x4 mat = _Properties[myIndex].mat;
 	float3 myPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
-	float3 myForward = float3(mat[0][2], mat[1][2], mat[2][2]);
-
-	float3 alignVector = float3(0, 0, 0);
+	float3 myForwardVector = float3(mat[0][2], mat[1][2], mat[2][2]);
+	
+	float3 sumOfAlignVectors = float3(0, 0, 0);
 	float neighborCount = 0;
 
 	for (int index = 0; index < _population; index++)
 	{
 		float3 otherAgentPosition = getAgentPosition(index, _Properties);
 
-		if (distance(myPosition, otherAgentPosition) < _radius)
+		if (distance(myPosition, otherAgentPosition) < _neigborRadius)
 		{
-			alignVector += myForward;
+			sumOfAlignVectors += myForwardVector;
 			neighborCount += 1;
 		}
 	}
-
 	if (neighborCount == 0)
 	{
-		return myForward;
+		return myForwardVector;
 	}
 
-	alignVector /= neighborCount;
+	sumOfAlignVectors /= neighborCount;
 
-	return alignVector;
+	return sumOfAlignVectors;
 }
 
 // 'Avoidance' function of the 'Crowd Member' class
-float3 getAvoidVector(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _radius, int _population, float _avoidanceRadius)
+float3 getAvoidVector(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _neigborRadius, int _population, float _avoidanceRadius, float _deltaTime)
 {
 	float4x4 mat = _Properties[myIndex].mat;
 	float3 myPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
 
-	float3 avoidVector = float3(0, 0, 0);  
+	float3 sumOfAvoidVectors = float3(0, 0, 0);  
 	int nAvoid = 0;
 
 	for (int index = 0; index < _population; index++)
 	{
 		float3 otherAgentPosition = getAgentPosition(index, _Properties);
-		// undeclared identifier 'avoidacneRadius' at kernel CSMain
 		if (distance(myPosition, otherAgentPosition) < _avoidanceRadius)
 		{
-			avoidVector += myPosition - otherAgentPosition;
+			sumOfAvoidVectors += myPosition - otherAgentPosition;
 			nAvoid += 1;
 		}
 	}
-
 	if (nAvoid > 0)
 	{
-		avoidVector /= nAvoid;
+		sumOfAvoidVectors /= nAvoid;
 	}
 
-	return avoidVector;
+	return sumOfAvoidVectors;
 }
-//// ------------------------------
+// ------------------------------
+
 // floating point division by zero at kernel CSMain
 // We used to just be able to use (1, 1, 1) threads for whatever population (not sure the old limit), but a Unity update
 // imposed a thread limit of 65535.  Now, to render populations above that, we need to be more granular with our threads.
 
 [numthreads(64, 1, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID) {
-	// original code : 
+	_debugBufferFloat[0] = _distanceFromPusher; 
+	_debugBufferFloat[1] = _neighborRadius;
+	_debugBufferFloat[2] = _deltaTime;
+	_debugBufferFloat[3] = _avoidanceRadius;
+	_debugBufferFloat[4] = _cohSpeed;
+	_debugBufferFloat[5] = _alignSpeed;
+	_debugBufferFloat[6] = _avoidSpeed;
+	_debugBufferFloat[7] = _awaySpeed;
+
 	float4x4 mat = _Properties[id.x].mat;
-	float3 position = float3(mat[0][3], mat[1][3], mat[2][3]);
+	float3 currentPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
 
-	//// ------------------------------
-	float3 cohVector = getCohVector(id.x, _Properties, _radius, _population, _maxCohVector);
-	float3 alignVector = getAlignVector(id.x, _Properties, _radius, _population);
-	float3 avoidVector = getAvoidVector(id.x, _Properties, _radius, _population, _avoidanceRadius);
+	float3 cohVector = getCohVector(id.x, _Properties, _neighborRadius, _population, _deltaTime); 
+	float3 alignVector = getAlignVector(id.x, _Properties, _neighborRadius, _population, _deltaTime);
+	float3 avoidVector = getAvoidVector(id.x, _Properties, _neighborRadius, _population, _avoidanceRadius, _deltaTime);
 
-	// original code : 
-	float dist = distance(position, _PusherPosition);
+	float dist = distance(currentPosition, _PusherPosition);
 	// Scale and reverse distance so that we get a value which fades as it gets further away.
 	// Max distance is 5.0.
 	// dist = 5.0 - clamp(0.0, 5.0, dist);
@@ -154,10 +162,9 @@ void CSMain(uint3 id : SV_DispatchThreadID) {
 	float3 awayVector;
 	float3 awayDir;
 
-	// variable '_distanceFromPusher' used without having been completely initialized at kernel CSMain
-	if (dist < _distanceFromPusher)
+	if (dist < _distanceFromPusher) 
 	{
-		awayDir = normalize(position - _PusherPosition);
+		awayDir = normalize(currentPosition - _PusherPosition);  
 		awayVector = awayDir * _awaySpeed;
 	}
 	else
@@ -165,9 +172,8 @@ void CSMain(uint3 id : SV_DispatchThreadID) {
 		awayVector = float3(0, 0, 0);
 	}
 
-	float3 moveVector = _cohWeight * cohVector + _alignWeight * alignVector + _avoidWeight * avoidVector + _awaySpeed * awayVector;
-	float3 nextPosition = moveVector * _deltaTime;
-
+	float3 moveVelocity = _cohSpeed * cohVector +_alignSpeed * alignVector + _avoidSpeed * avoidVector + _awaySpeed * awayVector;
+	float3 nextPosition = currentPosition + moveVelocity * _deltaTime;
 	_Properties[id.x].mat[0][3] = nextPosition.x;
 	_Properties[id.x].mat[1][3] = nextPosition.y;
 	_Properties[id.x].mat[2][3] = nextPosition.z;

@@ -1,35 +1,39 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine; 
+using UnityEngine;
 
 public class DrawMeshInstancedIndirectDemo : MonoBehaviour { 
     public int population; 
     public float range;
 
     // ------------------------------
-    public float distanceFromPusher;
-    public float awaySpeed;
-    public float radius;
-    public float deltaTime;
-    public float avoidanceRadius;
+    float[] debugArrayFloat = new float[8];
+    public float neighborRadius;
 
     [Header("Cohesion")]
-    public float cohWeight;
-    public Vector3 maxCohVector;
+    public float cohSpeed;
     [Header("Alignment")]
-    public float alignWeight;
+    public float alignSpeed;
     [Header("Avoidance")]
-    public float avoidWeight;
+    public float avoidSpeed;
+    public float avoidanceRadius;
+    [Header("Away")]
+    public float distanceFromPusher;
+    public float awaySpeed;
     // ------------------------------
 
     public Material material;
-    public ComputeShader compute;
+    public ComputeShader computeShader; 
     public Transform pusher;
 
+    // ****
+    private ComputeBuffer debugBufferFloat;
+    private ComputeBuffer debugBufferInt;
+    // ****
     private ComputeBuffer meshPropertiesBuffer;
     private ComputeBuffer argsBuffer;
 
-    private Mesh mesh; 
+    public Mesh mesh; 
     private Bounds bounds;
 
     // Mesh Properties struct to be read from the GPU.
@@ -39,35 +43,39 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
         public Vector4 color;
 
         // ------------------------------
-        public Vector3 cohVector;
-        public Vector3 alignVector;
-        public Vector3 avoidVector;
+        //public Vector3 cohVector;
+        //public Vector3 alignVector;
+        //public Vector3 avoidVector;
+
+        //public Vector3 position;
+        //public Vector3 velocity;
         // ------------------------------
 
         public static int Size() {
             return
                 sizeof(float) * 4 * 4 +
-                sizeof(float) * 4 +
-            // ------------------------------
-                sizeof(float) * 3 +
-                sizeof(float) * 3 +
-                sizeof(float) * 3;
-            // ------------------------------
+                sizeof(float) * 4;
+            //// ------------------------------
+            //    sizeof(float) * 3 + // cohVector
+            //    sizeof(float) * 3 + // alignVector
+            //    sizeof(float) * 3 + // avoidVector
+            //    sizeof(float) * 3 + // position
+            //    sizeof(float) * 3;  // velocity 
+            //// ------------------------------
         }
     }
 
-    private void Setup() { 
-        Mesh mesh = CreateQuad(); 
-        this.mesh = mesh;
+    private void Setup() {
+        // Mesh mesh = CreateQuad(); 
+        // this.mesh = mesh;
 
         // Boundary surrounding the meshes we will be drawing.  Used for occlusion.
         bounds = new Bounds(transform.position, Vector3.one * (range + 1));
-
         InitializeBuffers(); 
     }
 
     private void InitializeBuffers() { 
-        int kernel = compute.FindKernel("CSMain");
+        int kernel = computeShader.FindKernel("CSMain");
 
         // Argument buffer used by DrawMeshInstancedIndirect.
         uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
@@ -81,7 +89,8 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
         argsBuffer.SetData(args);
 
         // Initialize buffer with the given population.
-        MeshProperties[] properties = new MeshProperties[population]; 
+        MeshProperties[] properties = new MeshProperties[population];
+        
         for (int i = 0; i < population; i++) { 
             MeshProperties props = new MeshProperties();
             Vector3 position = new Vector3(Random.Range(-range, range), Random.Range(-range, range), Random.Range(-range, range));
@@ -92,61 +101,29 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
             props.color = Color.Lerp(Color.red, Color.blue, Random.value);
 
             // ------------------------------
-            props.cohVector = new Vector3(0, 0, 0);
-            props.alignVector = new Vector3(0, 0, 0);
-            props.avoidVector = new Vector3(0, 0, 0);
+            //props.cohVector = new Vector3(0, 0, 0);
+            //props.alignVector = new Vector3(0, 0, 0);
+            //props.avoidVector = new Vector3(0, 0, 0);
+
+            //props.position = new Vector3(0, 0, 0);
+            //props.velocity = new Vector3(0, 0, 0);
             // ------------------------------
 
             properties[i] = props;
         }
-
+        
         meshPropertiesBuffer = new ComputeBuffer(population, MeshProperties.Size());
-        meshPropertiesBuffer.SetData(properties);
+        meshPropertiesBuffer.SetData(properties); // 
 
-        compute.SetBuffer(kernel, "_Properties", meshPropertiesBuffer);
+        computeShader.SetBuffer(kernel, "_Properties", meshPropertiesBuffer);
         material.SetBuffer("_Properties", meshPropertiesBuffer);
-    }
 
-    private Mesh CreateQuad(float width = 1f, float height = 1f) { 
-        // Create a quad mesh.
-        var mesh = new Mesh();
+        // **** 
+        debugBufferFloat = new ComputeBuffer(12, 4); // float size = 4 byte
+        debugBufferFloat.SetData(debugArrayFloat);
 
-        float w = width * .5f;
-        float h = height * .5f;
-        var vertices = new Vector3[4] {
-            new Vector3(-w, -h, 0),
-            new Vector3(w, -h, 0),
-            new Vector3(-w, h, 0),
-            new Vector3(w, h, 0)
-        };
-
-        var tris = new int[6] {
-            // lower left tri.
-            0, 2, 1,
-            // lower right tri
-            2, 3, 1
-        };
-
-        var normals = new Vector3[4] {
-            -Vector3.forward,
-            -Vector3.forward,
-            -Vector3.forward,
-            -Vector3.forward,
-        };
-
-        var uv = new Vector2[4] {
-            new Vector2(0, 0),
-            new Vector2(1, 0),
-            new Vector2(0, 1),
-            new Vector2(1, 1),
-        };
-
-        mesh.vertices = vertices;
-        mesh.triangles = tris;
-        mesh.normals = normals;
-        mesh.uv = uv;
-
-        return mesh;
+        computeShader.SetBuffer(kernel, "_debugBufferFloat", debugBufferFloat);
+        // ****
     }
 
     private void Start() {
@@ -154,27 +131,38 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
     }
 
     private void Update() {
-        int kernel = compute.FindKernel("CSMain");
-
-        // ------------------------------
-        compute.SetFloat("_distanceFromPusher", distanceFromPusher);
-        compute.SetFloat("_awaySpeed", awaySpeed);
-        compute.SetFloat("_radius", radius);
-
-        compute.SetFloat("_cohWeight", cohWeight);
-        compute.SetFloat("_alignWeight", alignWeight);
-        compute.SetFloat("_avoidWeight", avoidWeight);
-
-        compute.SetFloat("_deltaTime", deltaTime);
-        compute.SetInt("_population", population);
-        compute.SetVector("_maxCohVector", maxCohVector);
-        compute.SetFloat("_avoidanceRadius", avoidanceRadius);
-        // ------------------------------
-
-        compute.SetVector("_PusherPosition", pusher.position);
+        int kernel = computeShader.FindKernel("CSMain");
+        computeShader.SetVector("_PusherPosition", pusher.position);
         // We used to just be able to use `population` here, but it looks like a Unity update imposed a thread limit (65535) on my device.
         // This is probably for the best, but we have to do some more calculation.  Divide population by numthreads.x in the compute shader.
-        compute.Dispatch(kernel, Mathf.CeilToInt(population / 64f), 1, 1); // CeilToInt : 올림
+
+        // ------------------------------
+        computeShader.SetFloat("_distanceFromPusher", distanceFromPusher);
+        computeShader.SetFloat("_neighborRadius", neighborRadius);
+        computeShader.SetFloat("_deltaTime", Time.deltaTime);
+        computeShader.SetInt("_population", population);
+        computeShader.SetFloat("_avoidanceRadius", avoidanceRadius);
+
+        computeShader.SetFloat("_cohSpeed", cohSpeed);
+        computeShader.SetFloat("_alignSpeed", alignSpeed);
+        computeShader.SetFloat("_avoidSpeed", avoidSpeed);
+        computeShader.SetFloat("_awaySpeed", awaySpeed);
+        // ------------------------------
+
+        computeShader.Dispatch(kernel, Mathf.CeilToInt(population / 64f), 1, 1); // CeilToInt : 올림
+
+        // ****
+        debugBufferFloat.GetData(debugArrayFloat);
+        Debug.Log($"distanceFromPusher = {distanceFromPusher}, {debugArrayFloat[0]}");
+        Debug.Log($"neighborRadius = {neighborRadius}, {debugArrayFloat[1]}");
+        Debug.Log($"deltaTime = {Time.deltaTime}, {debugArrayFloat[2]}");
+        Debug.Log($"avoidanceRadius = {avoidanceRadius}, {debugArrayFloat[3]}");
+        Debug.Log($"cohSpeed = {cohSpeed}, {debugArrayFloat[4]}");
+        Debug.Log($"alignSpeed = {alignSpeed}, {debugArrayFloat[5]}");
+        Debug.Log($"avoidSpeed = {avoidSpeed}, {debugArrayFloat[6]}");
+        Debug.Log($"awaySpeed = {awaySpeed}, {debugArrayFloat[7]}");
+        // ****
+
         Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer);
     }
 
