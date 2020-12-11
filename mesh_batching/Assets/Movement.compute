@@ -4,42 +4,53 @@ struct MeshProperties {
     float4x4 mat;
     float4 color;
 
-	// ------------------------------
-	//float3 cohVector;
-	//float3 alignVector;
-	//float3 avoidVector;
-
-	//float3 position; // position is float3(mat[0][3], mat[1][3], mat[2][3])
-	//float3 velocity; 
-	// current velocity * _deltaTime = next velocitiy 
-	// next velocity -> next position
-	// ------------------------------
+	float3 velocity;
 };
 
 RWStructuredBuffer<MeshProperties> _Properties; 
 float3 _PusherPosition; 
 
-// ****
-RWStructuredBuffer<float> _debugBufferFloat; // array
-// RWStructuredBuffer<int> _debugBufferInt;
-// ****
-// ------------------------------
-// **** 아래 순서 중요
-float _distanceFromPusher;
-float _neighborRadius;
+//RWStructuredBuffer<float> _debugBufferFloat; // array
+//RWStructuredBuffer<float3> _targetVelocityBuffer;
+//RWStructuredBuffer<float3> _cohVelocityBuffer;
+//RWStructuredBuffer<float3> _alignVelocityBuffer;
+//RWStructuredBuffer<float3> _avoidVelocityBuffer;
+//
+//RWStructuredBuffer<float> _debugNeighborCountBuffer;
+//RWStructuredBuffer<float3> _debugCenterOfMassBuffer;
+//RWStructuredBuffer<float3> _debugMyPositionBuffer; 
 
-float _deltaTime;
+RWStructuredBuffer<float3> _debugCurrentDirBuffer;
+// RWStructuredBuffer<float> _debugCurrentSpeedBuffer;
+RWStructuredBuffer<float3> _debugTargetDirBuffer;
+// RWStructuredBuffer<float> _debugTargetSpeedBuffer;
+RWStructuredBuffer<float3> _debugAxisBuffer;
+RWStructuredBuffer<float> _debugSpeedRatioBuffer;
+RWStructuredBuffer<float3> _debugNextDirBuffer;
+RWStructuredBuffer<float> _debugNextSpeedBuffer;
+RWStructuredBuffer<float3> _debugNextVelocityBuffer;
+
 int _population;
-float _avoidanceRadius; // avoidanceRadius < _neigborRadius
+
+float _distanceFromAttracter;
+float _neighborRadius;
+float _deltaTime;
+float _avoidanceRadius;
 
 float _cohSpeed;
 float _alignSpeed;
 float _avoidSpeed;
-float _awaySpeed;
-// ------------------------------
+float _attractSpeed;
 
-// ------------------------------
-// myIndex에 해당하는 agent의 position을 구해준다. 
+float _cohWeight;
+float _alignWeight;
+float _avoidWeight;
+
+float _minDistance;
+float _minTheta;
+
+float3 _boundsSize;  
+
 float3 getAgentPosition(int myIndex, RWStructuredBuffer<MeshProperties> _Properties)
 {
 	float4x4 mat = _Properties[myIndex].mat;
@@ -47,90 +58,107 @@ float3 getAgentPosition(int myIndex, RWStructuredBuffer<MeshProperties> _Propert
 	return myPosition;
 }
 
-// 'Cohesion' function of the 'Crowd Member' class 
-float3 getCohVector(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _neigborRadius, int _population, float _deltaTime)
+float3 getAgentForwardDir(int myIndex, RWStructuredBuffer<MeshProperties> _Properties)
 {
 	float4x4 mat = _Properties[myIndex].mat;
-	float3 myPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
-	float neighborCount = 0;
-	float3 sumOfCohVectors = float3(0, 0, 0); // sum of cohesion vectors
-	
+	float3 myForwardDir = float3(mat[0][2], mat[1][2], mat[2][2]);
+	return myForwardDir;
+}
+
+// 'Cohesion' function of the 'Crowd Member' class 
+float3 getCohVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _neigborRadius, int _population, float _cohSpeed)
+{
+	float3 myPosition = getAgentPosition(myIndex, _Properties);
+	float neighborCount = 0.0;
+	float3 sumOfOtherAgentPosition = float3(0.0, 0.0, 0.0);
+
 	for (int index = 0; index < _population; index++)
 	{
 		float3 otherAgentPosition = getAgentPosition(index, _Properties);
 		if (distance(myPosition, otherAgentPosition) < _neigborRadius)
 		{
-			sumOfCohVectors += otherAgentPosition;
+			sumOfOtherAgentPosition += otherAgentPosition;
 			neighborCount += 1;
 		}
 	}
-	if (neighborCount == 0)
+	if (neighborCount == 0.0)
 	{
-		return float3(0, 0, 0);
+		return float3(0.0, 0.0, 0.0); // return zero cohesion velocity. 
 	}
 
-	float3 cohCenter = sumOfCohVectors / neighborCount;
-	float3 cohTargetVector = cohCenter - myPosition; // cohesion target vector 방향으로 가는 것임. 
+	float3 centerOfMass = sumOfOtherAgentPosition / neighborCount;
+	float3 cohTargetVector = centerOfMass - myPosition; 
+
+	float3 cohDir = normalize(cohTargetVector);
+	float3 cohVelocity = cohDir * _cohSpeed;
+
+	//_debugNeighborCountBuffer[myIndex] = neighborCount;
+	//_debugCenterOfMassBuffer[myIndex] = centerOfMass;
+	//_debugMyPositionBuffer[myIndex] = myPosition;
 	
-	return cohTargetVector;
+	return cohVelocity;
 }
 
 // 'Alignment' function of the 'Crowd Member' class
-float3 getAlignVector(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _neigborRadius, int _population, float _deltaTime)
+float3 getAlignVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _neigborRadius, int _population, float _alignSpeed)
 {
-	float4x4 mat = _Properties[myIndex].mat;
-	float3 myPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
-	float3 myForwardVector = float3(mat[0][2], mat[1][2], mat[2][2]);
-	
-	float3 sumOfAlignVectors = float3(0, 0, 0);
-	float neighborCount = 0;
+	float3 myPosition = getAgentPosition(myIndex, _Properties);
+	float3 sumOfOtherAgentVelocity = float3(0, 0, 0);
+
+	float neighborCount = 0.0;
 
 	for (int index = 0; index < _population; index++)
 	{
 		float3 otherAgentPosition = getAgentPosition(index, _Properties);
-
 		if (distance(myPosition, otherAgentPosition) < _neigborRadius)
 		{
-			sumOfAlignVectors += myForwardVector;
+			float3 otherAgentVelocity = _Properties[index].velocity;
+			sumOfOtherAgentVelocity += otherAgentVelocity;
 			neighborCount += 1;
 		}
 	}
-	if (neighborCount == 0)
+	if (neighborCount == 0.0)
 	{
-		return myForwardVector;
+		float3 myVelocity = _Properties[myIndex].velocity;
+		return myVelocity;
 	}
 
-	sumOfAlignVectors /= neighborCount;
-
-	return sumOfAlignVectors;
+	return sumOfOtherAgentVelocity;
 }
 
 // 'Avoidance' function of the 'Crowd Member' class
-float3 getAvoidVector(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _neigborRadius, int _population, float _avoidanceRadius, float _deltaTime)
+float3 getAvoidVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _neigborRadius, int _population, float _avoidanceRadius, float _minDistance)
 {
-	float4x4 mat = _Properties[myIndex].mat;
-	float3 myPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
-
-	float3 sumOfAvoidVectors = float3(0, 0, 0);  
-	int nAvoid = 0;
+	float3 myPosition = getAgentPosition(myIndex, _Properties);
+	float3 sumOfValidAvoidVelocity = float3(0, 0, 0);  
+	float nAvoid = 0.0;
 
 	for (int index = 0; index < _population; index++)
 	{
-		float3 otherAgentPosition = getAgentPosition(index, _Properties);
+		float3 otherAgentPosition = getAgentPosition(index, _Properties); 
 		if (distance(myPosition, otherAgentPosition) < _avoidanceRadius)
 		{
-			sumOfAvoidVectors += myPosition - otherAgentPosition;
+			float3 avoidVelocity = myPosition - otherAgentPosition;
+			float dist = sqrt(pow(avoidVelocity.x, 2) + pow(avoidVelocity.y, 2) + pow(avoidVelocity.z, 2));
+			if (dist < _minDistance)
+			{
+				dist = _minDistance;
+			}
+			sumOfValidAvoidVelocity += avoidVelocity / dist;
 			nAvoid += 1;
 		}
 	}
-	if (nAvoid > 0)
+	if (nAvoid > 0.0)
 	{
-		sumOfAvoidVectors /= nAvoid;
+		sumOfValidAvoidVelocity /= nAvoid;
+	}
+	if (nAvoid == 0.0)
+	{
+		sumOfValidAvoidVelocity = float3(0, 0, 0);
 	}
 
-	return sumOfAvoidVectors;
+	return sumOfValidAvoidVelocity;
 }
-// ------------------------------
 
 // floating point division by zero at kernel CSMain
 // We used to just be able to use (1, 1, 1) threads for whatever population (not sure the old limit), but a Unity update
@@ -138,44 +166,72 @@ float3 getAvoidVector(int myIndex, RWStructuredBuffer<MeshProperties> _Propertie
 
 [numthreads(64, 1, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID) {
-	_debugBufferFloat[0] = _distanceFromPusher; 
-	_debugBufferFloat[1] = _neighborRadius;
-	_debugBufferFloat[2] = _deltaTime;
-	_debugBufferFloat[3] = _avoidanceRadius;
-	_debugBufferFloat[4] = _cohSpeed;
-	_debugBufferFloat[5] = _alignSpeed;
-	_debugBufferFloat[6] = _avoidSpeed;
-	_debugBufferFloat[7] = _awaySpeed;
-
+	//_debugBufferFloat[0] = _distanceFromAttracter;
+	//_debugBufferFloat[1] = _neighborRadius;
+	//_debugBufferFloat[2] = _deltaTime;
+	//_debugBufferFloat[3] = _avoidanceRadius;
+	//_debugBufferFloat[4] = _cohSpeed;
+	//_debugBufferFloat[5] = _alignSpeed;
+	//_debugBufferFloat[6] = _avoidSpeed;
+	//_debugBufferFloat[7] = _attractSpeed;
+	//_debugBufferFloat[8] = _cohWeight;
+	//_debugBufferFloat[9] = _alignWeight;
+	//_debugBufferFloat[10] = _avoidWeight;
+	
 	float4x4 mat = _Properties[id.x].mat;
 	float3 currentPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
+	float3 currentVelocity = _Properties[id.x].velocity;
 
-	float3 cohVector = getCohVector(id.x, _Properties, _neighborRadius, _population, _deltaTime); 
-	float3 alignVector = getAlignVector(id.x, _Properties, _neighborRadius, _population, _deltaTime);
-	float3 avoidVector = getAvoidVector(id.x, _Properties, _neighborRadius, _population, _avoidanceRadius, _deltaTime);
+	float3 cohVelocity = getCohVelocity(id.x, _Properties, _neighborRadius, _population, _cohSpeed);
+	float3 alignVelocity = getAlignVelocity(id.x, _Properties, _neighborRadius, _population, _alignSpeed);
+	float3 avoidVelocity = getAvoidVelocity(id.x, _Properties, _neighborRadius, _population, _avoidanceRadius, _minDistance); // _avoidSpeed 안씀. 
 
-	float dist = distance(currentPosition, _PusherPosition);
-	// Scale and reverse distance so that we get a value which fades as it gets further away.
-	// Max distance is 5.0.
-	// dist = 5.0 - clamp(0.0, 5.0, dist);
-
-	float3 awayVector;
-	float3 awayDir;
-
-	if (dist < _distanceFromPusher) 
+	float3 targetVelocity = _cohWeight * cohVelocity + _alignWeight * alignVelocity + _avoidWeight * avoidVelocity; // +_attractWeight * attractVelocity;
+	//_targetVelocityBuffer[id.x] = targetVelocity;
+	//_cohVelocityBuffer[id.x] = cohVelocity;
+	//_alignVelocityBuffer[id.x] = alignVelocity;
+	//_avoidVelocityBuffer[id.x] = avoidVelocity;
+	// dot(a,b) = abs(a)*abs(b)*cos(theta)
+	float dotProduct = dot(currentVelocity, targetVelocity);
+	float theta = acos(dotProduct / (length(currentVelocity) * length(targetVelocity)));
+	float deltaTheta;
+	if (theta > _minTheta) // _minTheta 는 약 5도 ?  
 	{
-		awayDir = normalize(currentPosition - _PusherPosition);  
-		awayVector = awayDir * _awaySpeed;
+		deltaTheta = _minTheta;
 	}
 	else
 	{
-		awayVector = float3(0, 0, 0);
+		deltaTheta = theta;
 	}
 
-	float3 moveVelocity = _cohSpeed * cohVector +_alignSpeed * alignVector + _avoidSpeed * avoidVector + _awaySpeed * awayVector;
-	float3 nextPosition = currentPosition + moveVelocity * _deltaTime;
+	float3 currentDir = normalize(currentVelocity);
+	float currentSpeed = length(currentVelocity);
+	float3 targetDir = normalize(targetVelocity);
+	float targetSpeed = length(targetVelocity);
+	float3 axis = normalize(cross(currentDir, targetDir)); // 축은 단위벡터
+	float speedRatio = (targetSpeed / currentSpeed) * (deltaTheta / theta);
+	// RotateDir = forwardVector * cos(Angle) + Cross(Axis, forwardVector) * sin(Angle) + Axis * Dot(Axis, forwardVector) * (1 - cos(Angle))
+	float3 nextDir = currentDir * cos(deltaTheta) + cross(axis, currentDir) * sin(deltaTheta) + axis * dot(axis, currentDir) * (1 - cos(deltaTheta));
+	float nextSpeed = currentSpeed * speedRatio;
+	float3 nextVelocity = nextDir * nextSpeed;
+	_debugCurrentDirBuffer[id.x] = currentDir;
+	// _debugCurrentSpeedBuffer[id.x] = currentSpeed;
+	_debugTargetDirBuffer[id.x] = targetDir;
+	// _debugTargetSpeedBuffer[id.x] = targetSpeed;
+	_debugAxisBuffer[id.x] = axis;
+	_debugSpeedRatioBuffer[id.x] = speedRatio;
+	_debugNextDirBuffer[id.x] = nextDir;
+	_debugNextSpeedBuffer[id.x] = nextSpeed;
+	_debugNextVelocityBuffer[id.x] = nextVelocity;
+	float3 nextPosition = currentPosition + nextVelocity * _deltaTime;
+	//하단 부분 주석 풀면 나비들이 움직이질 않음. 
+	//if (nextPosition.x < -_boundsSize.x/2 || nextPosition.x > _boundsSize.x/2 || nextPosition.y < -_boundsSize.y/2 || nextPosition.y > _boundsSize.y/2 || nextPosition.z < -_boundsSize.z/2 || nextPosition.z > _boundsSize.z/2)
+	//{
+	//	nextPosition = currentPosition;
+	//}
 	_Properties[id.x].mat[0][3] = nextPosition.x;
 	_Properties[id.x].mat[1][3] = nextPosition.y;
 	_Properties[id.x].mat[2][3] = nextPosition.z;
-	// ------------------------------
+
+	_Properties[id.x].velocity = nextVelocity;
 }

@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Assets\DrawMeshInstancedDemo.cs" />
     <Compile Include="Assets\DrawMeshInstancedIndirectDemo.cs" />
+    <Compile Include="Assets\GoalObject.cs" />
     <Compile Include="Assets\Scripts\CameraFollow.cs" />
     <Compile Include="Assets\Scripts\Drive.cs" />
     <Compile Include="Assets\Scripts\MoveDown.cs" />

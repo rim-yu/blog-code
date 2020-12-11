@@ -1,11 +1,16 @@
 Base path: 'C:/Program Files/Unity/Hub/Editor/2019.3.15f1/Editor/Data', plugins path 'C:/Program Files/Unity/Hub/Editor/2019.3.15f1/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
 Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(78): undeclared identifier 'mat'
-  api=4 insize=7052 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(168): undeclared identifier 'cohVector'
-  api=4 insize=7183 outsize=0 ok=0
-Unhandled exception: Protocol error - unexpected end of data (did the Editor crash?)
-
-Quitting shader compiler process
+  error: 1 plat 4 at (0): Shader uses 9 UAVs (0 textures and 9 buffers), which is more than the 8 maximum currently supported on D3D11.0.This is OK if you are only targeting D3D11.1 platforms
+  error: 1 plat 4 at Movement.compute(159): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(160): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(161): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(162): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(163): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(164): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(165): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(166): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(167): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(168): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  error: 1 plat 4 at Movement.compute(169): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
+  api=4 insize=7750 outsize=5430 ok=1

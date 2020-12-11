@@ -18,10 +18,11 @@
                 float4 vertex   : SV_POSITION;
                 fixed4 color    : COLOR;
             }; 
-
+            
             struct MeshProperties {
                 float4x4 mat;
                 float4 color;
+                float3 velocity;
             };
 
             StructuredBuffer<MeshProperties> _Properties;
@@ -29,11 +30,10 @@
             v2f vert(appdata_t i, uint instanceID: SV_InstanceID) { // 각 mesh의 index. 
                 v2f o;
 
-                float4 pos = mul(_Properties[instanceID].mat, i.vertex); // 각 mesh 별로 properties 가 넘어감. 
+                float4 pos = mul(_Properties[instanceID].mat, i.vertex); 
                 o.vertex = UnityObjectToClipPos(pos); 
                 o.color = _Properties[instanceID].color;
-                // 모델은 하나. 1000개의 매트릭스, 칼라가 넘어간다. 
-                // low level 에서 하던 방식을 추가해서 퍼포먼스를 높히는 것임. 
+
                 return o;
             }
             
