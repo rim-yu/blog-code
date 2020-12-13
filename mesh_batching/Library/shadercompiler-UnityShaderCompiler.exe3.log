@@ -1,2 +1,11 @@
 Base path: 'C:/Program Files/Unity/Hub/Editor/2019.3.15f1/Editor/Data', plugins path 'C:/Program Files/Unity/Hub/Editor/2019.3.15f1/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
+Cmd: compileComputeKernel
+  error: 2 plat 4 at Movement.compute(267): undeclared identifier 'nextVelocity'
+  api=4 insize=9427 outsize=0 ok=0
+Cmd: compileComputeKernel
+  api=4 insize=9476 outsize=4997 ok=1
+Cmd: compileComputeKernel
+  error: 2 plat 4 at Movement.compute(247): 'length': no matching 1 parameter intrinsic function; Possible intrinsic functions are: length(floatM|halfM|min10floatM|min16floatM)
+  error: 2 plat 4 at Movement.compute(247): undeclared identifier 'currenDir'
+  api=4 insize=9862 outsize=0 ok=0

@@ -400,18 +400,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7c25e43eccad8f4ba08678d4226d3c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  population: 500
-  range: 100
-  neighborRadius: 5
+  population: 5000
+  range: 50
+  deltaTime: 0.02
+  neighborRadius: 10
   minTheta: 0.08722222
-  cohSpeed: 0.2
+  cohSpeed: 0.5
   cohWeight: 0.2
-  alignSpeed: 0.2
-  alignWeight: 0.2
-  avoidSpeed: 0
-  avoidWeight: 0.2
-  avoidanceRadius: 5
-  minDistance: 0.01
+  alignWeight: 0.5
+  avoidWeight: 0.3
+  avoidanceRadius: 10
+  minDistance: 0.1
   attractSpeed: 0
   attractWeight: 0
   distanceFromAttracter: 0

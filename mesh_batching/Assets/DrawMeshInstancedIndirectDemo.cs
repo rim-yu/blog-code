@@ -7,25 +7,30 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
     public float range;
 
     //float[] debugArrayFloat = new float[11];
-    //Vector3[] targetVelocityArray;
-    //Vector3[] cohVelocityArray;
-    //Vector3[] alignVelocityArray;
-    //Vector3[] avoidVelocityArray;
+    Vector3[] targetVelocityArray;
+    Vector3[] cohVelocityArray;
+    Vector3[] alignVelocityArray;
+    Vector3[] avoidVelocityArray;
 
-    //float[] debugNeighborCountFloat;
+    float[] debugNeighborCountFloat;
     //Vector3[] debugCenterOfMassArray;
     //Vector3[] debugMyPositionArray;
+    //Vector3[] debugCohDirArray;
+    //Vector3[] debugCohTargetVelocityArray;
+    // Vector3[] debugReturnCohVelocityArray;
 
-    Vector3[] debugCurrentDirArray;
+    //Vector3[] debugCurrentDirArray;
     // float[] debugCurrentSpeedFloat;
-    Vector3[] debugTargetDirArray;
+    //Vector3[] debugTargetDirArray;
     // float[] debugTargetSpeedFloat;
-    Vector3[] debugAxisArray;
-    float[] debugSpeedRatioFloat;
-    Vector3[] debugNextDirArray;
-    float[] debugNextSpeedFloat;
+    //Vector3[] debugAxisArray;
+    //float[] debugSpeedRatioFloat;
+    //Vector3[] debugNextDirArray;
+    //float[] debugNextSpeedFloat;
     Vector3[] debugNextVelocityArray;
+    float[] debugThetaFloat;
 
+    public float deltaTime;
     public float neighborRadius;
     public float minTheta;
 
@@ -34,11 +39,9 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
     public float cohWeight;
 
     [Header("Alignment")]
-    public float alignSpeed;
     public float alignWeight;
 
     [Header("Avoidance")]
-    public float avoidSpeed;
     public float avoidWeight;
     public float avoidanceRadius;
     public float minDistance;
@@ -54,24 +57,27 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
     public ComputeShader computeShader; 
     public Transform pusher;
 
-    private ComputeBuffer debugBufferFloat;
+    //private ComputeBuffer debugBufferFloat;
     private ComputeBuffer targetVelocityBuffer;
     private ComputeBuffer cohVelocityBuffer;
     private ComputeBuffer alignVelocityBuffer;
     private ComputeBuffer avoidVelocityBuffer;
-    private ComputeBuffer debugCenterOfMassBuffer;
+    //private ComputeBuffer debugCenterOfMassBuffer;
     private ComputeBuffer debugNeighborCountBuffer;
-    private ComputeBuffer debugMyPositionBuffer;
+    //private ComputeBuffer debugMyPositionBuffer;
 
-    private ComputeBuffer debugCurrentDirBuffer;
+    // private ComputeBuffer debugCurrentDirBuffer;
     // private ComputeBuffer debugCurrentSpeedBuffer; 
-    private ComputeBuffer debugTargetDirBuffer;
+    // private ComputeBuffer debugTargetDirBuffer;
     // private ComputeBuffer debugTargetSpeedBuffer;
-    private ComputeBuffer debugAxisBuffer;
-    private ComputeBuffer debugSpeedRatioBuffer;
-    private ComputeBuffer debugNextDirBuffer;
-    private ComputeBuffer debugNextSpeedBuffer;
+    //private ComputeBuffer debugAxisBuffer;
+    //private ComputeBuffer debugSpeedRatioBuffer;
+    //private ComputeBuffer debugNextDirBuffer;
+    //private ComputeBuffer debugNextSpeedBuffer;
     private ComputeBuffer debugNextVelocityBuffer;
+    //private ComputeBuffer debugCohDirBuffer;
+    //private ComputeBuffer debugCohTargetVelocityBuffer;
+    private ComputeBuffer debugThetaBuffer;
 
     private ComputeBuffer meshPropertiesBuffer;
     private ComputeBuffer argsBuffer;
@@ -178,50 +184,65 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
         //debugMyPositionBuffer.SetData(debugMyPositionArray);
         //computeShader.SetBuffer(kernel, "_debugMyPositionBuffer", debugMyPositionBuffer);
 
-        debugCurrentDirArray = new Vector3[population];
-        debugCurrentDirBuffer = new ComputeBuffer(population, 12);
-        debugCurrentDirBuffer.SetData(debugCurrentDirArray);
-        computeShader.SetBuffer(kernel, "_debugCurrentDirBuffer", debugCurrentDirBuffer);
+        //debugCurrentDirArray = new Vector3[population];
+        //debugCurrentDirBuffer = new ComputeBuffer(population, 12);
+        //debugCurrentDirBuffer.SetData(debugCurrentDirArray);
+        //computeShader.SetBuffer(kernel, "_debugCurrentDirBuffer", debugCurrentDirBuffer);
 
         //debugCurrentSpeedFloat = new float[population];
         //debugCurrentSpeedBuffer = new ComputeBuffer(population, 4);
         //debugCurrentSpeedBuffer.SetData(debugCurrentSpeedFloat);
         //computeShader.SetBuffer(kernel, "_debugCurrentSpeedBuffer", debugCurrentSpeedBuffer);
 
-        debugTargetDirArray = new Vector3[population];
-        debugTargetDirBuffer = new ComputeBuffer(population, 12);
-        debugTargetDirBuffer.SetData(debugTargetDirArray);
-        computeShader.SetBuffer(kernel, "_debugTargetDirBuffer", debugTargetDirBuffer);
+        //debugTargetDirArray = new Vector3[population];
+        //debugTargetDirBuffer = new ComputeBuffer(population, 12);
+        //debugTargetDirBuffer.SetData(debugTargetDirArray);
+        //computeShader.SetBuffer(kernel, "_debugTargetDirBuffer", debugTargetDirBuffer);
 
         //debugTargetSpeedFloat = new float[population];
         //debugTargetSpeedBuffer = new ComputeBuffer(population, 4);
         //debugTargetSpeedBuffer.SetData(debugCurrentSpeedFloat);
         //computeShader.SetBuffer(kernel, "_debugTargetSpeedBuffer", debugTargetSpeedBuffer);
 
-        debugAxisArray = new Vector3[population];
-        debugAxisBuffer = new ComputeBuffer(population, 12);
-        debugAxisBuffer.SetData(debugAxisArray);
-        computeShader.SetBuffer(kernel, "_debugAxisBuffer", debugAxisBuffer);
+        //debugAxisArray = new Vector3[population];
+        //debugAxisBuffer = new ComputeBuffer(population, 12);
+        //debugAxisBuffer.SetData(debugAxisArray);
+        //computeShader.SetBuffer(kernel, "_debugAxisBuffer", debugAxisBuffer);
 
-        debugSpeedRatioFloat = new float[population];
-        debugSpeedRatioBuffer = new ComputeBuffer(population, 4);
-        debugSpeedRatioBuffer.SetData(debugSpeedRatioFloat);
-        computeShader.SetBuffer(kernel, "_debugSpeedRatioBuffer", debugSpeedRatioBuffer);
+        //debugSpeedRatioFloat = new float[population];
+        //debugSpeedRatioBuffer = new ComputeBuffer(population, 4);
+        //debugSpeedRatioBuffer.SetData(debugSpeedRatioFloat);
+        //computeShader.SetBuffer(kernel, "_debugSpeedRatioBuffer", debugSpeedRatioBuffer);
 
-        debugNextDirArray = new Vector3[population];
-        debugNextDirBuffer = new ComputeBuffer(population, 12);
-        debugNextDirBuffer.SetData(debugNextDirArray);
-        computeShader.SetBuffer(kernel, "_debugNextDirBuffer", debugNextDirBuffer);
+        //debugNextDirArray = new Vector3[population];
+        //debugNextDirBuffer = new ComputeBuffer(population, 12);
+        //debugNextDirBuffer.SetData(debugNextDirArray);
+        //computeShader.SetBuffer(kernel, "_debugNextDirBuffer", debugNextDirBuffer);
 
-        debugNextSpeedFloat = new float[population];
-        debugNextSpeedBuffer = new ComputeBuffer(population, 4);
-        debugNextSpeedBuffer.SetData(debugNextSpeedFloat);
-        computeShader.SetBuffer(kernel, "_debugNextSpeedBuffer", debugNextSpeedBuffer);
+        //debugNextSpeedFloat = new float[population];
+        //debugNextSpeedBuffer = new ComputeBuffer(population, 4);
+        //debugNextSpeedBuffer.SetData(debugNextSpeedFloat);
+        //computeShader.SetBuffer(kernel, "_debugNextSpeedBuffer", debugNextSpeedBuffer);
 
-        debugNextVelocityArray = new Vector3[population];
-        debugNextVelocityBuffer = new ComputeBuffer(population, 12);
-        debugNextVelocityBuffer.SetData(debugNextVelocityArray);
-        computeShader.SetBuffer(kernel, "_debugNextVelocityBuffer", debugNextVelocityBuffer);
+        //debugNextVelocityArray = new Vector3[population];
+        //debugNextVelocityBuffer = new ComputeBuffer(population, 12);
+        //debugNextVelocityBuffer.SetData(debugNextVelocityArray);
+        //computeShader.SetBuffer(kernel, "_debugNextVelocityBuffer", debugNextVelocityBuffer);
+
+        //debugCohDirArray = new Vector3[population];
+        //debugCohDirBuffer = new ComputeBuffer(population, 12);
+        //debugCohDirBuffer.SetData(debugCohDirArray);
+        //computeShader.SetBuffer(kernel, "_debugCohDirBuffer", debugCohDirBuffer);
+
+        //debugCohTargetVelocityArray = new Vector3[population];
+        //debugCohTargetVelocityBuffer = new ComputeBuffer(population, 12);
+        //debugCohTargetVelocityBuffer.SetData(debugCohTargetVelocityArray);
+        //computeShader.SetBuffer(kernel, "_debugCohTargetVelocityBuffer", debugCohTargetVelocityBuffer);
+
+        //debugThetaFloat = new float[population];
+        //debugThetaBuffer = new ComputeBuffer(population, 4);
+        //debugThetaBuffer.SetData(debugThetaFloat);
+        //computeShader.SetBuffer(kernel, "_debugThetaBuffer", debugThetaBuffer);
     }
 
     private void Start() {
@@ -233,13 +254,11 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
 
         computeShader.SetFloat("_distanceFromAttracter", distanceFromAttracter);
         computeShader.SetFloat("_neighborRadius", neighborRadius);
-        computeShader.SetFloat("_deltaTime", Time.deltaTime);
+        computeShader.SetFloat("_deltaTime", deltaTime);
         computeShader.SetInt("_population", population); 
         computeShader.SetFloat("_avoidanceRadius", avoidanceRadius);
 
         computeShader.SetFloat("_cohSpeed", cohSpeed);
-        computeShader.SetFloat("_alignSpeed", alignSpeed);
-        computeShader.SetFloat("_avoidSpeed", avoidSpeed);
         computeShader.SetFloat("_attractSpeed", attractSpeed);
 
         computeShader.SetFloat("_cohWeight", cohWeight);
@@ -249,35 +268,37 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
         computeShader.SetFloat("_minTheta", minTheta);
         computeShader.SetVector("_boundSize", boundsSize);
 
+
         computeShader.Dispatch(kernel, Mathf.CeilToInt(population / 64f), 1, 1);
         // meshPropertiesBuffer.GetData(properties);
-
         //debugBufferFloat.GetData(debugArrayFloat);
-
-
-        //targetVelocityBuffer.GetData(targetVelocityArray); // target velocity buffer 
+        // targetVelocityBuffer.GetData(targetVelocityArray); // target velocity buffer 
 
         //cohVelocityBuffer.GetData(cohVelocityArray); // cohesion velocity buffer
         //alignVelocityBuffer.GetData(alignVelocityArray); // alignment velocity buffer
         //avoidVelocityBuffer.GetData(avoidVelocityArray); // avoidance velocity buffer
 
+        //debugCohDirBuffer.GetData(debugCohDirArray);
+        //debugCohTargetVelocityBuffer.GetData(debugCohTargetVelocityArray);
+
         //debugNeighborCountBuffer.GetData(debugNeighborCountFloat);
         //debugCenterOfMassBuffer.GetData(debugCenterOfMassArray);
         //debugMyPositionBuffer.GetData(debugMyPositionArray);
 
-        debugCurrentDirBuffer.GetData(debugCurrentDirArray);
+        //debugCurrentDirBuffer.GetData(debugCurrentDirArray);
         // debugCurrentSpeedBuffer.GetData(debugCurrentSpeedFloat);
-        debugTargetDirBuffer.GetData(debugTargetDirArray);
+        //debugTargetDirBuffer.GetData(debugTargetDirArray);
         // debugTargetSpeedBuffer.GetData(debugTargetSpeedFloat);
-        debugAxisBuffer.GetData(debugAxisArray);
-        debugSpeedRatioBuffer.GetData(debugSpeedRatioFloat);
-        debugNextDirBuffer.GetData(debugNextDirArray);
-        debugNextSpeedBuffer.GetData(debugNextSpeedFloat);
-        debugNextVelocityBuffer.GetData(debugNextVelocityArray);
+        //debugAxisBuffer.GetData(debugAxisArray);
+        //debugSpeedRatioBuffer.GetData(debugSpeedRatioFloat);
+        //debugNextDirBuffer.GetData(debugNextDirArray);
+        //debugNextSpeedBuffer.GetData(debugNextSpeedFloat);
+        //debugNextVelocityBuffer.GetData(debugNextVelocityArray);
+        //debugThetaBuffer.GetData(debugThetaFloat);
 
         //Debug.Log($"distanceFromPusher = {distanceFromAttracter}, {debugArrayFloat[0]}");
         //Debug.Log($"neighborRadius = {neighborRadius}, {debugArrayFloat[1]}");
-        //Debug.Log($"deltaTime = {Time.deltaTime}, {debugArrayFloat[2]}");
+        //Debug.Log($"deltaTime = {deltaTime}, {debugArrayFloat[2]}");
         //Debug.Log($"avoidanceRadius = {avoidanceRadius}, {debugArrayFloat[3]}");
         //Debug.Log($"cohSpeed = {cohSpeed}, {debugArrayFloat[4]}");
         //Debug.Log($"cohWeight = {cohWeight}, {debugArrayFloat[8]}");
@@ -286,6 +307,7 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
         //Debug.Log($"avoidSpeed = {avoidSpeed}, {debugArrayFloat[6]}");
         //Debug.Log($"avoidWeight = {avoidWeight}, {debugArrayFloat[10]}");
         //Debug.Log($"attractSpeed = {attractSpeed}, {debugArrayFloat[7]}");
+
         for (int i = 0; i < population; i++)
         {
             //Debug.Log($"velocity[{i}] = {properties[i].velocity}");
@@ -297,15 +319,18 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
             //Debug.Log($"centerOfMass[{i}] = {debugCenterOfMassArray[i]}");
             //Debug.Log($"myPosition[{i}] = {debugMyPositionArray[i]}");
 
-            Debug.Log($"currentDir[{i}] = {debugCurrentDirArray[i]}");
-            // Debug.Log($"currentSpeed[{i}] = {debugCurrentSpeedFloat[i]}");
-            Debug.Log($"targetDir[{i}] = {debugTargetDirArray[i]}");
-            // Debug.Log($"targetSpeed[{i}] = {debugTargetSpeedFloat[i]}");
-            Debug.Log($"axis[{i}] = {debugAxisArray[i]}");
-            Debug.Log($"speedRatio[{i}] = {debugSpeedRatioFloat[i]}");
-            Debug.Log($"nextDir[{i}] = {debugNextDirArray[i]}");
-            Debug.Log($"nextSpeed[{i}] = {debugNextSpeedFloat[i]}");
-            Debug.Log($"nextVelocity[{i}] = {debugNextVelocityArray[i]}");
+            //Debug.Log($"currentDir[{i}] = {debugCurrentDirArray[i]}");
+            //// Debug.Log($"currentSpeed[{i}] = {debugCurrentSpeedFloat[i]}");
+            //Debug.Log($"targetDir[{i}] = {debugTargetDirArray[i]}");
+            //// Debug.Log($"targetSpeed[{i}] = {debugTargetSpeedFloat[i]}");
+            //Debug.Log($"axis[{i}] = {debugAxisArray[i]}");
+            //Debug.Log($"speedRatio[{i}] = {debugSpeedRatioFloat[i]}");
+            //Debug.Log($"nextDir[{i}] = {debugNextDirArray[i]}");
+            //Debug.Log($"nextSpeed[{i}] = {debugNextSpeedFloat[i]}");
+            // Debug.Log($"nextVelocity[{i}] = {debugNextVelocityArray[i]}");
+            //Debug.Log($"cohDir[{i}] = {debugCohDirArray[i]}");
+            //Debug.Log($"cohTargetVelocity[{i}] = {debugCohTargetVelocityArray[i]}");
+            // Debug.Log($"theta[{i}] = {debugThetaFloat[i]}");
         }
 
         Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer);
@@ -324,5 +349,10 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
             argsBuffer.Release();
         }
         argsBuffer = null;
+    }
+
+    private void FixedUpdate()
+    {
+        // Debug.Log(Time.deltaTime);
     }
 }

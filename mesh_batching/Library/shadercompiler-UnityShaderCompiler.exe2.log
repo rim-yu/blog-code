@@ -1,15 +1,4 @@
 Base path: 'C:/Program Files/Unity/Hub/Editor/2019.3.15f1/Editor/Data', plugins path 'C:/Program Files/Unity/Hub/Editor/2019.3.15f1/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
 Cmd: compileComputeKernel
-  error: 1 plat 4 at Movement.compute(151): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
-  error: 1 plat 4 at Movement.compute(152): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
-  error: 1 plat 4 at Movement.compute(153): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
-  error: 1 plat 4 at Movement.compute(154): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
-  error: 1 plat 4 at Movement.compute(155): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
-  error: 1 plat 4 at Movement.compute(156): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
-  error: 1 plat 4 at Movement.compute(157): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
-  error: 1 plat 4 at Movement.compute(158): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
-  error: 1 plat 4 at Movement.compute(159): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
-  error: 1 plat 4 at Movement.compute(160): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
-  error: 1 plat 4 at Movement.compute(161): race condition writing to shared resource detected, note that threads will be writing the same value, but performance may be diminished due to contention.
-  api=4 insize=7418 outsize=5111 ok=1
+  api=4 insize=9266 outsize=5053 ok=1
