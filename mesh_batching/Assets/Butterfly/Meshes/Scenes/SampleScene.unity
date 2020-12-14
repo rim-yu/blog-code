@@ -400,20 +400,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7c25e43eccad8f4ba08678d4226d3c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  population: 5000
+  population: 10000
   range: 50
   deltaTime: 0.02
   neighborRadius: 10
   minTheta: 0.08722222
-  cohSpeed: 0.5
+  cohSpeed: 0.6
   cohWeight: 0.2
   alignWeight: 0.5
   avoidWeight: 0.3
-  avoidanceRadius: 10
+  avoidanceRadius: 2
   minDistance: 0.1
-  attractSpeed: 0
-  attractWeight: 0
-  distanceFromAttracter: 0
   material: {fileID: 2100000, guid: 73db65a1ca221d743a283d61debf851c, type: 2}
   computeShader: {fileID: 7200000, guid: c805f08c2dbc29d4e9ce1c601a11ce73, type: 3}
   pusher: {fileID: 2001345050}

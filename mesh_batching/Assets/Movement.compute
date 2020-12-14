@@ -10,30 +10,6 @@ struct MeshProperties {
 RWStructuredBuffer<MeshProperties> _Properties; 
 float3 _PusherPosition; 
 
-//RWStructuredBuffer<float> _debugBufferFloat; // array
-//RWStructuredBuffer<float3> _targetVelocityBuffer;
-//RWStructuredBuffer<float3> _cohVelocityBuffer;
-//RWStructuredBuffer<float3> _alignVelocityBuffer;
-//RWStructuredBuffer<float3> _avoidVelocityBuffer;
-
-//RWStructuredBuffer<float3> _debugCohTargetVelocityBuffer;
-//RWStructuredBuffer<float> _debugNeighborCountBuffer;
-//RWStructuredBuffer<float3> _debugCenterOfMassBuffer;
-//RWStructuredBuffer<float3> _debugMyPositionBuffer; 
-//RWStructuredBuffer<float3> _debugCohDirBuffer;
-// RWStructuredBuffer<float3> _debugReturnCohVelocityBuffer;
-
-//RWStructuredBuffer<float3> _debugCurrentDirBuffer;
-// RWStructuredBuffer<float> _debugCurrentSpeedBuffer;
-//RWStructuredBuffer<float3> _debugTargetDirBuffer;
-// RWStructuredBuffer<float> _debugTargetSpeedBuffer;
-//RWStructuredBuffer<float3> _debugAxisBuffer;
-//RWStructuredBuffer<float> _debugSpeedRatioBuffer;
-//RWStructuredBuffer<float3> _debugNextDirBuffer;
-//RWStructuredBuffer<float> _debugNextSpeedBuffer;
-//RWStructuredBuffer<float3> _debugNextVelocityBuffer;
-//RWStructuredBuffer<float> _debugThetaBuffer;
-
 int _population;
 
 float _distanceFromAttracter;
@@ -67,6 +43,11 @@ float3 nextVelocity;
 float3 nextPosition;
 float3 velocityDiff;
 
+RWStructuredBuffer<float3> _currentVelocityBuffer;
+RWStructuredBuffer<float3> _cohVelocityBuffer;
+RWStructuredBuffer<float3> _alignVelocityBuffer;
+RWStructuredBuffer<float3> _avoidVelocityBuffer;
+
 float3 getAgentPosition(int myIndex, RWStructuredBuffer<MeshProperties> _Properties)
 {
 	float4x4 mat = _Properties[myIndex].mat;
@@ -74,11 +55,10 @@ float3 getAgentPosition(int myIndex, RWStructuredBuffer<MeshProperties> _Propert
 	return myPosition;
 }
 
-float3 getAgentForwardDir(int myIndex, RWStructuredBuffer<MeshProperties> _Properties)
+float3 getAgentVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Properties)
 {
-	float4x4 mat = _Properties[myIndex].mat;
-	float3 myForwardDir = float3(mat[0][2], mat[1][2], mat[2][2]);
-	return myForwardDir;
+	float3 myVelocity = _Properties[myIndex].velocity;
+	return myVelocity;
 }
 
 // 'Cohesion' function of the 'Crowd Member' class 
@@ -102,7 +82,6 @@ float3 getCohVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Propertie
 	if (neighborCount == 0.0)
 	{
 		cohVelocity = myVelocity;
-		// return;
 	}
 	float3 centerOfMass = sumOfOtherAgentPosition / neighborCount;
 	float3 cohTargetVector = centerOfMass - myPosition; 
@@ -116,11 +95,6 @@ float3 getCohVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Propertie
 	}
 	cohVelocity = cohDir * _cohSpeed;
 
-	//_debugNeighborCountBuffer[myIndex] = neighborCount;
-	//_debugCenterOfMassBuffer[myIndex] = centerOfMass;
-	//_debugMyPositionBuffer[myIndex] = myPosition;
-	//_debugCohTargetVelocityBuffer[myIndex] = cohTargetVector;
-	//_debugCohDirBuffer[myIndex] = cohDir;
 	return cohVelocity;
 }
 
@@ -128,7 +102,7 @@ float3 getCohVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Propertie
 float3 getAlignVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _neigborRadius, int _population)
 {
 	float3 myPosition = getAgentPosition(myIndex, _Properties);
-	float3 myVelocity = _Properties[myIndex].velocity;
+	float3 myVelocity = getAgentVelocity(myIndex, _Properties);
 	float3 sumOfOtherAgentVelocity = float3(0.0, 0.0, 0.0);
 	float3 alignVelocity = float3(0.0, 0.0, 0.0);
 	float neighborCount = 0.0;
@@ -138,19 +112,18 @@ float3 getAlignVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Propert
 		float3 otherAgentPosition = getAgentPosition(index, _Properties);
 		if (distance(myPosition, otherAgentPosition) < _neigborRadius)
 		{
-			float3 otherAgentVelocity = _Properties[index].velocity;
+			float3 otherAgentVelocity = getAgentVelocity(index, _Properties);
 			sumOfOtherAgentVelocity += otherAgentVelocity;
 			neighborCount += 1.0;
 		}
 	}
-
-	// _debugNeighborCountBuffer[myIndex] = neighborCount;
+	alignVelocity = sumOfOtherAgentVelocity;
 
 	if (neighborCount == 0.0)
 	{
 		alignVelocity = myVelocity;
 	}
-	else
+	else // neigborCount != 0.0
 	{
 		alignVelocity = sumOfOtherAgentVelocity / neighborCount;
 		if (length(alignVelocity) == 0.0)
@@ -176,7 +149,7 @@ float3 getAvoidVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Propert
 		if (distance(myPosition, otherAgentPosition) < _avoidanceRadius)
 		{
 			float3 avoidVelocity = myPosition - otherAgentPosition;
-			float dist = sqrt(pow(avoidVelocity.x, 2) + pow(avoidVelocity.y, 2) + pow(avoidVelocity.z, 2));
+			float dist = length(avoidVelocity);
 			if (dist < _minDistance)
 			{
 				dist = _minDistance;
@@ -205,33 +178,22 @@ float3 getAvoidVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Propert
 // imposed a thread limit of 65535.  Now, to render populations above that, we need to be more granular with our threads.
 
 [numthreads(64, 1, 1)]
-void CSMain(uint3 id : SV_DispatchThreadID) {
-	//_debugBufferFloat[0] = _distanceFromAttracter;
-	//_debugBufferFloat[1] = _neighborRadius;
-	//_debugBufferFloat[2] = _deltaTime;
-	//_debugBufferFloat[3] = _avoidanceRadius;
-	//_debugBufferFloat[4] = _cohSpeed;
-	//_debugBufferFloat[5] = _alignSpeed;
-	//_debugBufferFloat[6] = _avoidSpeed;
-	//_debugBufferFloat[7] = _attractSpeed;
-	//_debugBufferFloat[8] = _cohWeight;
-	//_debugBufferFloat[9] = _alignWeight;
-	//_debugBufferFloat[10] = _avoidWeight;
-	
+void CSMain(uint3 id : SV_DispatchThreadID) {	
 	float4x4 mat = _Properties[id.x].mat;
 	float3 currentPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
 	float3 currentVelocity = _Properties[id.x].velocity;
-	
+
+	_currentVelocityBuffer[id.x] = currentVelocity;
+
 	float3 cohVelocity = getCohVelocity(id.x, _Properties, _neighborRadius, _population, _cohSpeed);
 	float3 alignVelocity = getAlignVelocity(id.x, _Properties, _neighborRadius, _population);
 	float3 avoidVelocity = getAvoidVelocity(id.x, _Properties, _neighborRadius, _population, _avoidanceRadius, _minDistance); 
 
-	float3 targetVelocity = _cohWeight * cohVelocity + _alignWeight * alignVelocity + _avoidWeight * avoidVelocity; 
+	_cohVelocityBuffer[id.x] = cohVelocity;
+	_alignVelocityBuffer[id.x] = alignVelocity;
+	_avoidVelocityBuffer[id.x] = avoidVelocity;
 
-	//_targetVelocityBuffer[id.x] = targetVelocity;
-	//_cohVelocityBuffer[id.x] = cohVelocity;
-	//_alignVelocityBuffer[id.x] = alignVelocity;
-	//_avoidVelocityBuffer[id.x] = avoidVelocity;
+	float3 targetVelocity = _cohWeight * cohVelocity + _alignWeight * alignVelocity + _avoidWeight * avoidVelocity;
 
 	// if statement conditional expressions must evaluate to a scalar at kernel CSMain
 	if (targetVelocity.x == currentVelocity.x && targetVelocity.y == currentVelocity.y && targetVelocity.z == currentVelocity.z)
@@ -260,66 +222,8 @@ void CSMain(uint3 id : SV_DispatchThreadID) {
 		return;  
 	}
 
-	// dot(a,b) = abs(a)*abs(b)*cos(theta)
-	// 구간 [-1, 1]에 있는 X의 실수 값에 대해 acos(X)는 구간 [0, π]의 값을 반환합니다.
-	// 구간 [-1, 1] 밖에 있는 X의 실수 값이나 X의 복소수 값에 대해 acos(X)는 복소수 값을 반환합니다.
-	// currentVelocity, targetVelocity 의 길이 모두 1이 아니면 acos 복소수 값 반환한다. 
-	// targetVelocity - currentVelocity -> 차이 velocity 
-	// float3 velocityDiff = targetVelocity - currentVelocity
 	velocityDiff = targetVelocity - currentVelocity;
-	nextVelocity = currentVelocity + velocityDiff * _deltaTime; 
-
-	//dotProduct = dot(currentVelocity, targetVelocity);
-	//theta = acos(dotProduct / (length(currentVelocity) * length(targetVelocity))); // 0 <= acos(x) <= pi 
-	//_debugThetaBuffer[id.x] = theta;
-	//if (theta == 0.0)
-	//{
-	//	nextVelocity = targetVelocity;
-	//	nextPosition = currentPosition + nextVelocity * _deltaTime;
-
-	//	_Properties[id.x].mat[0][3] = nextPosition.x;
-	//	_Properties[id.x].mat[1][3] = nextPosition.y;
-	//	_Properties[id.x].mat[2][3] = nextPosition.z;
-
-	//	_Properties[id.x].velocity = nextVelocity;
-	//	return;
-	//}
-
-	//currentDir = normalize(currentVelocity);
-	//currentSpeed = length(currentVelocity);
-	//targetDir = normalize(targetVelocity);
-	//targetSpeed = length(targetVelocity);
-	//axis = normalize(cross(currentDir, targetDir));
-	//// speedRatio = (targetSpeed / currentSpeed) * (deltaTheta / theta);
-	//if (theta > _minTheta)
-	//{
-	//	deltaTheta = _minTheta;
-	//}
-	//else
-	//{
-	//	deltaTheta = theta;
-	//}
-	//// targetSpeed : currentSpeed = theta : deltaTheta
-	//// (targetSpeed - currentSpeed) * (deltaTheta / theta)
-	//// speedRatio = (targetSpeed / currentSpeed) * (deltaTheta / theta);
-	//deltaSpeed = (targetSpeed - currentSpeed) * (deltaTheta / theta);
-	//// RotateDir = forwardVector * cos(Angle) + Cross(Axis, forwardVector) * sin(Angle) + Axis * Dot(Axis, forwardVector) * (1 - cos(Angle))
-	//nextDir = currentDir * cos(deltaTheta) + cross(axis, currentDir) * sin(deltaTheta) + axis * dot(axis, currentDir) * (1 - cos(deltaTheta));
-	//nextSpeed = currentSpeed + deltaSpeed;
-	//nextVelocity = nextDir * nextSpeed;
-	
-	//_debugNextVelocityBuffer[id.x] = nextVelocity;
-	// float3 nextVelocity = nextDir * targetSpeed * (deltaTheta / theta);
-	//_debugCurrentDirBuffer[id.x] = currentDir;
-	// _debugCurrentSpeedBuffer[id.x] = currentSpeed;
-	//_debugTargetDirBuffer[id.x] = targetDir;
-	// _debugTargetSpeedBuffer[id.x] = targetSpeed;
-	//_debugAxisBuffer[id.x] = axis;
-	//_debugSpeedRatioBuffer[id.x] = speedRatio;
-	//_debugNextDirBuffer[id.x] = nextDir;
-	//_debugNextSpeedBuffer[id.x] = nextSpeed;
-	// _debugNextVelocityBuffer[id.x] = nextVelocity;
-
+	nextVelocity = currentVelocity + velocityDiff; 
 	nextPosition = currentPosition + nextVelocity * _deltaTime;
 
 	if (nextPosition.x < -_boundsSize.x/2 || nextPosition.x > _boundsSize.x/2 || nextPosition.y < -_boundsSize.y/2 || nextPosition.y > _boundsSize.y/2 || nextPosition.z < -_boundsSize.z/2 || nextPosition.z > _boundsSize.z/2)

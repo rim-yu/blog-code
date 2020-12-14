@@ -1,515 +1,88 @@
 Base path: 'C:/Program Files/Unity/Hub/Editor/2019.3.15f1/Editor/Data', plugins path 'C:/Program Files/Unity/Hub/Editor/2019.3.15f1/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
 Cmd: preprocessCompute
-  insize=8920 outsize=8919 ok=1
+  insize=7076 outsize=7075 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=8919 outsize=4702 ok=1
+  api=4 insize=7075 outsize=4226 ok=1
 Cmd: preprocessCompute
-  insize=8989 outsize=8988 ok=1
+  insize=7378 outsize=7377 ok=1
 Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(94): if statement conditional expressions must evaluate to a scalar
-  api=4 insize=8988 outsize=0 ok=0
+  api=4 insize=7377 outsize=4226 ok=1
 Cmd: preprocessCompute
-  insize=8946 outsize=8945 ok=1
-Cmd: preprocessCompute
-  insize=8968 outsize=8967 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(95): undeclared identifier 'null'
-  api=4 insize=8967 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=8967 outsize=8966 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(95): undeclared identifier 'NaN'
-  api=4 insize=8966 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=8985 outsize=8984 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(95): undeclared identifier 'NaN'
-  api=4 insize=8984 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9089 outsize=9088 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(96): if statement conditional expressions must evaluate to a scalar
-  api=4 insize=9088 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9077 outsize=9076 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9076 outsize=4798 ok=1
-Cmd: preprocessCompute
-  insize=9020 outsize=9019 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9019 outsize=4653 ok=1
-Cmd: preprocessCompute
-  insize=8949 outsize=8948 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=8948 outsize=4653 ok=1
-Cmd: preprocessCompute
-  insize=9005 outsize=9004 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9004 outsize=4681 ok=1
-Cmd: preprocessCompute
-  insize=9132 outsize=9131 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(196): l-value specifies const object
-  api=4 insize=9131 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9090 outsize=9089 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(195): l-value specifies const object
-  api=4 insize=9089 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9098 outsize=9097 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9097 outsize=4681 ok=1
-Cmd: preprocessCompute
-  insize=9108 outsize=9107 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9107 outsize=4805 ok=1
-Cmd: preprocessCompute
-  insize=9205 outsize=9204 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9204 outsize=4929 ok=1
-Cmd: preprocessCompute
-  insize=9131 outsize=9130 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9130 outsize=4681 ok=1
-Cmd: preprocessCompute
-  insize=9279 outsize=9278 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(222): if statement conditional expressions must evaluate to a scalar
-  api=4 insize=9278 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9303 outsize=9302 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9302 outsize=5053 ok=1
-Cmd: preprocessCompute
-  insize=9267 outsize=9266 ok=1
-Cmd: preprocessCompute
-  insize=9349 outsize=9348 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9348 outsize=5177 ok=1
-Cmd: preprocessCompute
-  insize=9425 outsize=9424 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(256): undeclared identifier 'nextVelocity'
-  api=4 insize=9424 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9428 outsize=9427 ok=1
-Cmd: preprocessCompute
-  insize=9471 outsize=9470 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(257): syntax error: unexpected token '_debugNextVelocityBuffer'
-  api=4 insize=9470 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9466 outsize=9465 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(257): undeclared identifier 'nextVelocity'
-  api=4 insize=9465 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9474 outsize=9473 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9473 outsize=3384 ok=1
-Cmd: preprocessCompute
-  insize=9333 outsize=9332 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(204): undeclared identifier 'a'
-  api=4 insize=9332 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9349 outsize=9348 ok=1
-Cmd: preprocessCompute
-  insize=9475 outsize=9474 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9474 outsize=4957 ok=1
-Cmd: preprocessCompute
-  insize=9477 outsize=9476 ok=1
-Cmd: preprocessCompute
-  insize=9411 outsize=9410 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9410 outsize=4873 ok=1
-Cmd: preprocessCompute
-  insize=9691 outsize=9690 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9690 outsize=5277 ok=1
-Cmd: preprocessCompute
-  insize=9595 outsize=9594 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9594 outsize=5333 ok=1
-Cmd: preprocessCompute
-  insize=9824 outsize=9823 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9823 outsize=5361 ok=1
-Cmd: preprocessCompute
-  insize=9946 outsize=9945 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9945 outsize=5444 ok=1
-Cmd: preprocessCompute
-  insize=9984 outsize=9983 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(262): syntax error: unexpected token '}'
-  error: 2 plat 4 at Movement.compute(268): undeclared identifier 'nextSpeed'
-  api=4 insize=9983 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9985 outsize=9984 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9984 outsize=5264 ok=1
-Cmd: preprocessCompute
-  insize=9937 outsize=9936 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9936 outsize=5180 ok=1
-Cmd: preprocessCompute
-  insize=9874 outsize=9873 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9873 outsize=5116 ok=1
-Cmd: preprocessCompute
-  insize=9428 outsize=9427 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9427 outsize=4868 ok=1
-Cmd: preprocessCompute
-  insize=9515 outsize=9514 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9514 outsize=5008 ok=1
-Cmd: preprocessCompute
-  insize=9480 outsize=9479 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9479 outsize=5184 ok=1
-Cmd: preprocessCompute
-  insize=9571 outsize=9570 ok=1
-Cmd: preprocessCompute
-  insize=9589 outsize=9588 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9588 outsize=5036 ok=1
-Cmd: preprocessCompute
-  insize=9589 outsize=9588 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9588 outsize=5008 ok=1
-Cmd: preprocessCompute
-  insize=9576 outsize=9575 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9575 outsize=5184 ok=1
-Cmd: preprocessCompute
-  insize=9658 outsize=9657 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9657 outsize=5092 ok=1
-Cmd: preprocessCompute
-  insize=9616 outsize=9615 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9615 outsize=5088 ok=1
-Cmd: preprocessCompute
-  insize=9879 outsize=9878 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(247): 'length': no matching 1 parameter intrinsic function; Possible intrinsic functions are: length(floatM|halfM|min10floatM|min16floatM)
-  error: 2 plat 4 at Movement.compute(247): undeclared identifier 'currenDir'
-  api=4 insize=9878 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9878 outsize=9877 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(247): 'length': no matching 1 parameter intrinsic function; Possible intrinsic functions are: length(floatM|halfM|min10floatM|min16floatM)
-  error: 2 plat 4 at Movement.compute(247): undeclared identifier 'currenDir'
-  api=4 insize=9877 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9863 outsize=9862 ok=1
-Cmd: preprocessCompute
-  insize=9847 outsize=9846 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(245): 'length': no matching 1 parameter intrinsic function; Possible intrinsic functions are: length(floatM|halfM|min10floatM|min16floatM)
-  error: 2 plat 4 at Movement.compute(245): undeclared identifier 'currenDir'
-  api=4 insize=9846 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9789 outsize=9788 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(247): syntax error: unexpected token 'else'
-  api=4 insize=9788 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9793 outsize=9792 ok=1
-Cmd: preprocessCompute
-  insize=9811 outsize=9810 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9810 outsize=5492 ok=1
-Cmd: preprocessCompute
-  insize=9182 outsize=9181 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(246): undeclared identifier 'nextVelocity'
-  api=4 insize=9181 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9235 outsize=9234 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(247): syntax error: unexpected token '.'
-  error: 2 plat 4 at Movement.compute(248): undeclared identifier 'nextVelocity'
-  api=4 insize=9234 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9235 outsize=9234 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(248): undeclared identifier 'nextVelocity'
-  api=4 insize=9234 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9394 outsize=9393 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(265): undeclared identifier 'nextPositxion'
-  api=4 insize=9393 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9393 outsize=9392 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9392 outsize=4797 ok=1
-Cmd: preprocessCompute
-  insize=9378 outsize=9377 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9377 outsize=4797 ok=1
-Cmd: preprocessCompute
-  insize=9560 outsize=9559 ok=1
-Cmd: preprocessCompute
-  insize=9553 outsize=9552 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9552 outsize=4733 ok=1
-Cmd: preprocessCompute
-  insize=9560 outsize=9559 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9559 outsize=4797 ok=1
-Cmd: preprocessCompute
-  insize=9699 outsize=9698 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9698 outsize=4797 ok=1
-Cmd: preprocessCompute
-  insize=9816 outsize=9815 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9815 outsize=4797 ok=1
-Cmd: preprocessCompute
-  insize=9790 outsize=9789 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9789 outsize=4673 ok=1
-Cmd: preprocessCompute
-  insize=9985 outsize=9984 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(219): if statement conditional expressions must evaluate to a scalar
-  api=4 insize=9984 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9983 outsize=9982 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9982 outsize=4713 ok=1
-Cmd: preprocessCompute
-  insize=9985 outsize=9984 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(219): if statement conditional expressions must evaluate to a scalar
-  api=4 insize=9984 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9446 outsize=9445 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9445 outsize=4797 ok=1
-Cmd: preprocessCompute
-  insize=9448 outsize=9447 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9447 outsize=4797 ok=1
-Cmd: preprocessCompute
-  insize=9461 outsize=9460 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9460 outsize=4797 ok=1
-Cmd: preprocessCompute
-  insize=9459 outsize=9458 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9458 outsize=4797 ok=1
-Cmd: preprocessCompute
-  insize=9445 outsize=9444 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9444 outsize=4797 ok=1
-Cmd: preprocessCompute
-  insize=9461 outsize=9460 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(144): undeclared identifier 'alignVelocity'
-  api=4 insize=9460 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9501 outsize=9500 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9500 outsize=4797 ok=1
-Cmd: preprocessCompute
-  insize=9485 outsize=9484 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9484 outsize=4769 ok=1
-Cmd: preprocessCompute
-  insize=9496 outsize=9495 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9495 outsize=4825 ok=1
-Cmd: preprocessCompute
-  insize=9485 outsize=9484 ok=1
-Cmd: preprocessCompute
-  insize=9501 outsize=9500 ok=1
-Cmd: preprocessCompute
-  insize=9491 outsize=9490 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9490 outsize=4809 ok=1
-Cmd: preprocessCompute
-  insize=9485 outsize=9484 ok=1
-Cmd: preprocessCompute
-  insize=9505 outsize=9504 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9504 outsize=4837 ok=1
-Cmd: preprocessCompute
-  insize=9485 outsize=9484 ok=1
-Cmd: preprocessCompute
-  insize=9501 outsize=9500 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(148): undeclared identifier 'neighborcount'
-  api=4 insize=9500 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=9501 outsize=9500 ok=1
-Cmd: preprocessCompute
-  insize=9553 outsize=9552 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9552 outsize=4890 ok=1
-Cmd: preprocessCompute
-  insize=9547 outsize=9546 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9546 outsize=4882 ok=1
-Cmd: preprocessCompute
-  insize=9567 outsize=9566 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9566 outsize=4890 ok=1
-Cmd: preprocessCompute
-  insize=9571 outsize=9570 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9570 outsize=4890 ok=1
-Cmd: preprocessCompute
-  insize=9629 outsize=9628 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9628 outsize=4862 ok=1
-Cmd: preprocessCompute
-  insize=9633 outsize=9632 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=9632 outsize=4862 ok=1
-Cmd: preprocessCompute
-  insize=10158 outsize=10157 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=10157 outsize=4930 ok=1
-Cmd: preprocessCompute
-  insize=10168 outsize=10167 ok=1
+  insize=7372 outsize=7371 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10167 outsize=4958 ok=1
+  error: 2 plat 4 at Movement.compute(109): syntax error: unexpected token 'float'
+  error: 2 plat 4 at Movement.compute(118): undeclared identifier 'neighborCount'
+  api=4 insize=7371 outsize=0 ok=0
 Cmd: preprocessCompute
-  insize=10058 outsize=10057 ok=1
+  insize=7373 outsize=7372 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10057 outsize=4862 ok=1
+  api=4 insize=7372 outsize=4226 ok=1
 Cmd: preprocessCompute
-  insize=10076 outsize=10075 ok=1
+  insize=7377 outsize=7376 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10075 outsize=4930 ok=1
+  api=4 insize=7376 outsize=4226 ok=1
 Cmd: preprocessCompute
-  insize=10072 outsize=10071 ok=1
+  insize=7377 outsize=7376 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10071 outsize=4906 ok=1
+  api=4 insize=7376 outsize=3670 ok=1
 Cmd: preprocessCompute
-  insize=10082 outsize=10081 ok=1
+  insize=7065 outsize=7064 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10081 outsize=4934 ok=1
+  api=4 insize=7064 outsize=4226 ok=1
 Cmd: preprocessCompute
-  insize=10076 outsize=10075 ok=1
+  insize=7052 outsize=7051 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10075 outsize=4906 ok=1
+  api=4 insize=7051 outsize=4226 ok=1
 Cmd: preprocessCompute
-  insize=10073 outsize=10072 ok=1
+  insize=7028 outsize=7027 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10072 outsize=4906 ok=1
+  api=4 insize=7027 outsize=4226 ok=1
 Cmd: preprocessCompute
-  insize=10079 outsize=10078 ok=1
+  insize=7262 outsize=7261 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10078 outsize=4934 ok=1
+  api=4 insize=7261 outsize=4212 ok=1
 Cmd: preprocessCompute
-  insize=10103 outsize=10102 ok=1
+  insize=7227 outsize=7226 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10102 outsize=4934 ok=1
+  api=4 insize=7226 outsize=4316 ok=1
 Cmd: preprocessCompute
-  insize=10106 outsize=10105 ok=1
+  insize=7265 outsize=7264 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10105 outsize=4934 ok=1
+  api=4 insize=7264 outsize=4316 ok=1
 Cmd: preprocessCompute
-  insize=10084 outsize=10083 ok=1
+  insize=7451 outsize=7450 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10083 outsize=4822 ok=1
+  api=4 insize=7450 outsize=4316 ok=1
 Cmd: preprocessCompute
-  insize=10436 outsize=10435 ok=1
+  insize=7505 outsize=7504 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10435 outsize=4871 ok=1
+  error: 2 plat 4 at Movement.compute(134): syntax error: unexpected token 'return'
+  api=4 insize=7504 outsize=0 ok=0
 Cmd: preprocessCompute
-  insize=11120 outsize=11119 ok=1
+  insize=7507 outsize=7506 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=11119 outsize=4999 ok=1
+  api=4 insize=7506 outsize=3832 ok=1
 Cmd: preprocessCompute
-  insize=10849 outsize=10848 ok=1
+  insize=7457 outsize=7456 ok=1
 Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(71): syntax error: unexpected token 'bool'
-  api=4 insize=10848 outsize=0 ok=0
+  api=4 insize=7456 outsize=3908 ok=1
 Cmd: preprocessCompute
-  insize=10737 outsize=10736 ok=1
+  insize=7473 outsize=7472 ok=1
 Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(71): syntax error: unexpected token 'float3'
-  api=4 insize=10736 outsize=0 ok=0
+  api=4 insize=7472 outsize=3936 ok=1
 Cmd: preprocessCompute
-  insize=10687 outsize=10686 ok=1
+  insize=7418 outsize=7417 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10686 outsize=5051 ok=1
+  api=4 insize=7417 outsize=4244 ok=1
 Cmd: preprocessCompute
-  insize=10542 outsize=10541 ok=1
+  insize=7436 outsize=7435 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=10541 outsize=5098 ok=1
+  error: 2 plat 4 at Movement.compute(227): undeclared identifier '_pusherPosition'
+  api=4 insize=7435 outsize=0 ok=0
 Cmd: preprocessCompute
-  insize=10847 outsize=10846 ok=1
+  insize=7436 outsize=7435 ok=1
 Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(103): 'getCohVelocity': function must return a value
-  api=4 insize=10846 outsize=0 ok=0
+  api=4 insize=7435 outsize=4315 ok=1
 Cmd: preprocessCompute
-  insize=11196 outsize=11195 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(103): 'getCohVelocity': function must return a value
-  api=4 insize=11195 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=11198 outsize=11197 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(155): syntax error: unexpected token '}'
-  error: 2 plat 4 at Movement.compute(161): syntax error: unexpected token '('
-  error: 2 plat 4 at Movement.compute(204): syntax error: unexpected token '('
-  error: 2 plat 4 at Movement.compute(218): undeclared identifier 'mat'
-  api=4 insize=11197 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=11205 outsize=11204 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(154): syntax error: unexpected token ')'
-  error: 2 plat 4 at Movement.compute(159): syntax error: unexpected token 'return'
-  api=4 insize=11204 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=11204 outsize=11203 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at Movement.compute(236): if statement conditional expressions must evaluate to a scalar
-  api=4 insize=11203 outsize=0 ok=0
-Cmd: preprocessCompute
-  insize=11376 outsize=11375 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=11375 outsize=5334 ok=1
-Cmd: preprocessCompute
-  insize=11134 outsize=11133 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=11133 outsize=5486 ok=1
-Cmd: preprocessCompute
-  insize=11155 outsize=11154 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=11154 outsize=5486 ok=1
-Cmd: preprocessCompute
-  insize=11057 outsize=11056 ok=1
-Cmd: preprocessCompute
-  insize=11143 outsize=11142 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=11142 outsize=5334 ok=1
-Cmd: preprocessCompute
-  insize=11261 outsize=11260 ok=1
-Cmd: preprocessCompute
-  insize=11221 outsize=11220 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=11220 outsize=5419 ok=1
-Cmd: preprocessCompute
-  insize=11547 outsize=11546 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=11546 outsize=4085 ok=1
-Cmd: preprocessCompute
-  insize=11574 outsize=11573 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=11573 outsize=3549 ok=1
-Cmd: preprocessCompute
-  insize=11843 outsize=11842 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=11842 outsize=3964 ok=1
+  insize=7418 outsize=7417 ok=1
